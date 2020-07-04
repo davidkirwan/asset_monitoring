@@ -1,4 +1,14 @@
-== Coinbase API
+== Crypto Monitoring
+A little POC I've thrown together to show some of the basics of the Openshift 4.x monitoring stack.
+
+- Sample configuration for the User Workload monitoring stack which is in tech preview, eg data retention, and persistent storage claim size etc.
+- small ruby app that has a /metrics endpoint, and 2 gauge metrics being exported
+- Prometheus ServiceMonitor to monitor the service
+- Prometheus PrometheusRule to fire based on those alerts
+- WIP, but I'll add example Grafana GrafanaDashboards which graph the metrics at some future point
+
+
+=== Coinbase API
 Docs: https://developers.coinbase.com/api/v2
 
 ----
