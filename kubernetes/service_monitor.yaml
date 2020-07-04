@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: crypto-monitoring-service-monitor
+  namespace: monitoring-example
+spec:
+  endpoints:
+    - bearerTokenSecret:
+        key: ''
+      interval: 30s
+      port: 8080-tcp
+      scheme: http
+  selector:
+    matchLabels:
+      app: crypto

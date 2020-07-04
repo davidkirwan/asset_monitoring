@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: crypto
+  name: crypto-monitoring-alerts
+  namespace: monitoring-example
+spec:
+  groups:
+    - name: CryptoMonitoringAlerts
+      rules:
+        - alert: BitcoinOverNineK
+          annotations:
+            message: >
+              The price of Bitcoin has gone above €9000
+          expr: crypto_btc_eur > 9000
+          for: 5m
+          labels:
+            severity: warning
+        - alert: EthereumOverTwoFifty
+          annotations:
+            message: |
+              The price of Ethereum has gone above €250
+          expr: crypto_eth_eur > 250
+          for: 5m
+          labels:
+            severity: warning
