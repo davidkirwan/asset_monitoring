@@ -1,11 +1,12 @@
 == Crypto Monitoring
-A little POC I've thrown together to show some of the basics of the Openshift 4.x monitoring stack.
+A little POC I've thrown together to show some of the basics of the Openshift 4.x monitoring stack. https://docs.openshift.com/container-platform/4.5/monitoring/monitoring-your-own-services.html
 
 - Sample configuration for the User Workload monitoring stack which is in tech preview, eg data retention, and persistent storage claim size etc.
 - small ruby app that has a /metrics endpoint, and 2 gauge metrics being exported
 - Prometheus ServiceMonitor to monitor the service
 - Prometheus PrometheusRule to fire based on those metrics
-- WIP, but I'll add example Grafana GrafanaDashboards which graph the metrics at some future point
+- Seems I can't add example Grafana GrafanaDashboards, as the Grafana instance which is shipped in the Openshift monitoring stack, is read-only and only available for infra dashboards.
+- Potential solution will be to use the Grafana operator: https://operatorhub.io/operator/grafana-operator / https://github.com/integr8ly/grafana-operator/
 
 
 === Coinbase API
