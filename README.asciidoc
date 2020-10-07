@@ -1,33 +1,209 @@
-== Crypto Monitoring
+== Asset Monitoring
 A little POC I've thrown together to show some of the basics of the Openshift 4.x monitoring stack. https://docs.openshift.com/container-platform/4.5/monitoring/monitoring-your-own-services.html
 
 - Sample configuration for the User Workload monitoring stack which is in tech preview, eg data retention, and persistent storage claim size etc.
 - small ruby app that has a /metrics endpoint, and 2 gauge metrics being exported
 - Prometheus ServiceMonitor to monitor the service
 - Prometheus PrometheusRule to fire based on those metrics
-- Seems I can't add example Grafana GrafanaDashboards, as the Grafana instance which is shipped in the Openshift monitoring stack, is read-only and only available for infra dashboards.
-- Potential solution will be to use the Grafana operator: https://operatorhub.io/operator/grafana-operator / https://github.com/integr8ly/grafana-operator/
-
-
-=== Coinbase API
-Docs: https://developers.coinbase.com/api/v2
+- The Openshift Grafana is not accessible for use as part of the user workload monitoring stack. One potential solution will be to use the Grafana operator: https://operatorhub.io/operator/grafana-operator / https://github.com/integr8ly/grafana-operator/
 
 ----
-curl https://api.coinbase.com/v2/prices/BTC-EUR/spot
-{"data":{"base":"BTC","currency":"EUR","amount":"8882.40801808"}}
-
-curl https://api.coinbase.com/v2/prices/ETH-EUR/spot
-{"data":{"base":"ETH","currency":"EUR","amount":"193.34586846"}}
-----
-
-
-
-----
-$ curl localhost:8080/metrics
+# HELP bullion_gold_zurich_buy_usd The buy spot price of Gold in the Zurich exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_buy_usd gauge
+bullion_gold_zurich_buy_usd{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='usd', qty='0.15'} 60350
+# HELP bullion_gold_zurich_sell_usd The buy spot price of Gold in the Zurich exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_sell_usd gauge
+bullion_gold_zurich_sell_usd{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='usd', qty='0.961'} 60450
+# HELP bullion_gold_zurich_buy_gbp The buy spot price of Gold in the Zurich exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_buy_gbp gauge
+bullion_gold_zurich_buy_gbp{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='gbp', qty='0.015'} 46880
+# HELP bullion_gold_zurich_sell_gbp The buy spot price of Gold in the Zurich exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_sell_gbp gauge
+bullion_gold_zurich_sell_gbp{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='gbp', qty='0.963'} 46930
+# HELP bullion_gold_zurich_buy_eur The buy spot price of Gold in the Zurich exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_buy_eur gauge
+bullion_gold_zurich_buy_eur{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='eur', qty='0.134'} 51450
+# HELP bullion_gold_zurich_sell_eur The buy spot price of Gold in the Zurich exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_sell_eur gauge
+bullion_gold_zurich_sell_eur{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='eur', qty='0.95'} 51500
+# HELP bullion_gold_zurich_buy_jpy The buy spot price of Gold in the Zurich exchange in currency JPY. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_buy_jpy gauge
+bullion_gold_zurich_buy_jpy{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='jpy', qty='1.899'} 6365000
+# HELP bullion_gold_zurich_sell_jpy The buy spot price of Gold in the Zurich exchange in currency JPY. Quantities are listed in kg.
+# TYPE bullion_gold_zurich_sell_jpy gauge
+bullion_gold_zurich_sell_jpy{security_id='AUXZU', comodity='Gold', exchange='Zurich', currency='jpy', qty='1.928'} 6390000
+# HELP bullion_gold_london_buy_usd The buy spot price of Gold in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_london_buy_usd gauge
+bullion_gold_london_buy_usd{security_id='AUXLN', comodity='Gold', exchange='London', currency='usd', qty='0.031'} 60406
+# HELP bullion_gold_london_sell_usd The buy spot price of Gold in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_london_sell_usd gauge
+bullion_gold_london_sell_usd{security_id='AUXLN', comodity='Gold', exchange='London', currency='usd', qty='0.04'} 60410
+# HELP bullion_gold_london_buy_gbp The buy spot price of Gold in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_london_buy_gbp gauge
+bullion_gold_london_buy_gbp{security_id='AUXLN', comodity='Gold', exchange='London', currency='gbp', qty='0.026'} 46800
+# HELP bullion_gold_london_sell_gbp The buy spot price of Gold in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_london_sell_gbp gauge
+bullion_gold_london_sell_gbp{security_id='AUXLN', comodity='Gold', exchange='London', currency='gbp', qty='0.109'} 46900
+# HELP bullion_gold_london_buy_eur The buy spot price of Gold in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_london_buy_eur gauge
+bullion_gold_london_buy_eur{security_id='AUXLN', comodity='Gold', exchange='London', currency='eur', qty='0.031'} 51409
+# HELP bullion_gold_london_sell_eur The buy spot price of Gold in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_london_sell_eur gauge
+bullion_gold_london_sell_eur{security_id='AUXLN', comodity='Gold', exchange='London', currency='eur', qty='0.109'} 51480
+# HELP bullion_gold_newyork_buy_usd The buy spot price of Gold in the New York exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_buy_usd gauge
+bullion_gold_newyork_buy_usd{security_id='AUXNY', comodity='Gold', exchange='New York', currency='usd', qty='0.075'} 61408
+# HELP bullion_gold_newyork_sell_usd The buy spot price of Gold in the New York exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_sell_usd gauge
+bullion_gold_newyork_sell_usd{security_id='AUXNY', comodity='Gold', exchange='New York', currency='usd', qty='0.219'} 64500
+# HELP bullion_gold_newyork_buy_gbp The buy spot price of Gold in the New York exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_buy_gbp gauge
+bullion_gold_newyork_buy_gbp{security_id='AUXNY', comodity='Gold', exchange='New York', currency='gbp', qty='0.018'} 47103
+# HELP bullion_gold_newyork_sell_gbp The buy spot price of Gold in the New York exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_sell_gbp gauge
+bullion_gold_newyork_sell_gbp{security_id='AUXNY', comodity='Gold', exchange='New York', currency='gbp', qty='1.279'} 51950
+# HELP bullion_gold_newyork_buy_eur The buy spot price of Gold in the New York exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_buy_eur gauge
+bullion_gold_newyork_buy_eur{security_id='AUXNY', comodity='Gold', exchange='New York', currency='eur', qty='0.05'} 52084
+# HELP bullion_gold_newyork_sell_eur The buy spot price of Gold in the New York exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_newyork_sell_eur gauge
+bullion_gold_newyork_sell_eur{security_id='AUXNY', comodity='Gold', exchange='New York', currency='eur', qty='0.05'} 54000
+# HELP bullion_gold_toronto_buy_usd The buy spot price of Gold in the Toronto exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_buy_usd gauge
+bullion_gold_toronto_buy_usd{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='usd', qty='0.021'} 60220
+# HELP bullion_gold_toronto_sell_usd The buy spot price of Gold in the Toronto exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_sell_usd gauge
+bullion_gold_toronto_sell_usd{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='usd', qty='0.01'} 63208
+# HELP bullion_gold_toronto_buy_gbp The buy spot price of Gold in the Toronto exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_buy_gbp gauge
+bullion_gold_toronto_buy_gbp{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='gbp', qty='0.185'} 47200
+# HELP bullion_gold_toronto_sell_gbp The buy spot price of Gold in the Toronto exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_sell_gbp gauge
+bullion_gold_toronto_sell_gbp{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='gbp', qty='0.068'} 51300
+# HELP bullion_gold_toronto_buy_eur The buy spot price of Gold in the Toronto exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_buy_eur gauge
+bullion_gold_toronto_buy_eur{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='eur', qty='0.01'} 52087
+# HELP bullion_gold_toronto_sell_eur The buy spot price of Gold in the Toronto exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_toronto_sell_eur gauge
+bullion_gold_toronto_sell_eur{security_id='AUXTR', comodity='Gold', exchange='Toronto', currency='eur', qty='0.01'} 53625
+# HELP bullion_gold_singapore_buy_usd The buy spot price of Gold in the Singapore exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_buy_usd gauge
+bullion_gold_singapore_buy_usd{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='usd', qty='0.016'} 60270
+# HELP bullion_gold_singapore_sell_usd The buy spot price of Gold in the Singapore exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_sell_usd gauge
+bullion_gold_singapore_sell_usd{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='usd', qty='0.958'} 60500
+# HELP bullion_gold_singapore_buy_gbp The buy spot price of Gold in the Singapore exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_buy_gbp gauge
+bullion_gold_singapore_buy_gbp{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='gbp', qty='0.948'} 46790
+# HELP bullion_gold_singapore_sell_gbp The buy spot price of Gold in the Singapore exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_sell_gbp gauge
+bullion_gold_singapore_sell_gbp{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='gbp', qty='0.948'} 46970
+# HELP bullion_gold_singapore_buy_eur The buy spot price of Gold in the Singapore exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_buy_eur gauge
+bullion_gold_singapore_buy_eur{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='eur', qty='0.128'} 51500
+# HELP bullion_gold_singapore_sell_eur The buy spot price of Gold in the Singapore exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_gold_singapore_sell_eur gauge
+bullion_gold_singapore_sell_eur{security_id='AUXSG', comodity='Gold', exchange='Singapore', currency='eur', qty='0.953'} 51550
+# HELP bullion_silver_zurich_buy_usd The buy spot price of Silver in the Zurich exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_buy_usd gauge
+bullion_silver_zurich_buy_usd{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='usd', qty='14.924'} 748
+# HELP bullion_silver_zurich_sell_usd The buy spot price of Silver in the Zurich exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_sell_usd gauge
+bullion_silver_zurich_sell_usd{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='usd', qty='29.832'} 752
+# HELP bullion_silver_zurich_buy_gbp The buy spot price of Silver in the Zurich exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_buy_gbp gauge
+bullion_silver_zurich_buy_gbp{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='gbp', qty='2.531'} 580
+# HELP bullion_silver_zurich_sell_gbp The buy spot price of Silver in the Zurich exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_sell_gbp gauge
+bullion_silver_zurich_sell_gbp{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='gbp', qty='5.819'} 584
+# HELP bullion_silver_zurich_buy_eur The buy spot price of Silver in the Zurich exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_buy_eur gauge
+bullion_silver_zurich_buy_eur{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='eur', qty='14.654'} 637
+# HELP bullion_silver_zurich_sell_eur The buy spot price of Silver in the Zurich exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_zurich_sell_eur gauge
+bullion_silver_zurich_sell_eur{security_id='AGXZU', comodity='Silver', exchange='Zurich', currency='eur', qty='19.884'} 641
+# HELP bullion_silver_london_buy_usd The buy spot price of Silver in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_london_buy_usd gauge
+bullion_silver_london_buy_usd{security_id='AGXLN', comodity='Silver', exchange='London', currency='usd', qty='14.469'} 748
+# HELP bullion_silver_london_sell_usd The buy spot price of Silver in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_london_sell_usd gauge
+bullion_silver_london_sell_usd{security_id='AGXLN', comodity='Silver', exchange='London', currency='usd', qty='7.722'} 750
+# HELP bullion_silver_london_buy_gbp The buy spot price of Silver in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_london_buy_gbp gauge
+bullion_silver_london_buy_gbp{security_id='AGXLN', comodity='Silver', exchange='London', currency='gbp', qty='3.289'} 580
+# HELP bullion_silver_london_sell_gbp The buy spot price of Silver in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_london_sell_gbp gauge
+bullion_silver_london_sell_gbp{security_id='AGXLN', comodity='Silver', exchange='London', currency='gbp', qty='2.918'} 582
+# HELP bullion_silver_london_buy_eur The buy spot price of Silver in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_london_buy_eur gauge
+bullion_silver_london_buy_eur{security_id='AGXLN', comodity='Silver', exchange='London', currency='eur', qty='14.654'} 637
+# HELP bullion_silver_london_sell_eur The buy spot price of Silver in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_london_sell_eur gauge
+bullion_silver_london_sell_eur{security_id='AGXLN', comodity='Silver', exchange='London', currency='eur', qty='4.804'} 639
+# HELP bullion_silver_toronto_buy_usd The buy spot price of Silver in the Toronto exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_buy_usd gauge
+bullion_silver_toronto_buy_usd{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='usd', qty='0.998'} 768
+# HELP bullion_silver_toronto_sell_usd The buy spot price of Silver in the Toronto exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_sell_usd gauge
+bullion_silver_toronto_sell_usd{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='usd', qty='0.995'} 792
+# HELP bullion_silver_toronto_buy_gbp The buy spot price of Silver in the Toronto exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_buy_gbp gauge
+bullion_silver_toronto_buy_gbp{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='gbp', qty='1.072'} 583
+# HELP bullion_silver_toronto_sell_gbp The buy spot price of Silver in the Toronto exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_sell_gbp gauge
+bullion_silver_toronto_sell_gbp{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='gbp', qty='1.336'} 615
+# HELP bullion_silver_toronto_buy_eur The buy spot price of Silver in the Toronto exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_buy_eur gauge
+bullion_silver_toronto_buy_eur{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='eur', qty='1.081'} 643
+# HELP bullion_silver_toronto_sell_eur The buy spot price of Silver in the Toronto exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_toronto_sell_eur gauge
+bullion_silver_toronto_sell_eur{security_id='AGXTR', comodity='Silver', exchange='Toronto', currency='eur', qty='1.341'} 675
+# HELP bullion_silver_singapore_buy_usd The buy spot price of Silver in the Singapore exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_buy_usd gauge
+bullion_silver_singapore_buy_usd{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='usd', qty='36.189'} 749
+# HELP bullion_silver_singapore_sell_usd The buy spot price of Silver in the Singapore exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_sell_usd gauge
+bullion_silver_singapore_sell_usd{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='usd', qty='2.264'} 780
+# HELP bullion_silver_singapore_buy_gbp The buy spot price of Silver in the Singapore exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_buy_gbp gauge
+bullion_silver_singapore_buy_gbp{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='gbp', qty='0.389'} 583
+# HELP bullion_silver_singapore_sell_gbp The buy spot price of Silver in the Singapore exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_sell_gbp gauge
+bullion_silver_singapore_sell_gbp{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='gbp', qty='2.186'} 606
+# HELP bullion_silver_singapore_buy_eur The buy spot price of Silver in the Singapore exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_buy_eur gauge
+bullion_silver_singapore_buy_eur{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='eur', qty='0.777'} 643
+# HELP bullion_silver_singapore_sell_eur The buy spot price of Silver in the Singapore exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_silver_singapore_sell_eur gauge
+bullion_silver_singapore_sell_eur{security_id='AGXSG', comodity='Silver', exchange='Singapore', currency='eur', qty='1.268'} 665
+# HELP bullion_platinum_london_buy_usd The buy spot price of Platinum in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_platinum_london_buy_usd gauge
+bullion_platinum_london_buy_usd{security_id='PTXLN', comodity='Platinum', exchange='London', currency='usd', qty='0.031'} 27521
+# HELP bullion_platinum_london_sell_usd The buy spot price of Platinum in the London exchange in currency USD. Quantities are listed in kg.
+# TYPE bullion_platinum_london_sell_usd gauge
+bullion_platinum_london_sell_usd{security_id='PTXLN', comodity='Platinum', exchange='London', currency='usd', qty='0.149'} 27790
+# HELP bullion_platinum_london_buy_gbp The buy spot price of Platinum in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_platinum_london_buy_gbp gauge
+bullion_platinum_london_buy_gbp{security_id='PTXLN', comodity='Platinum', exchange='London', currency='gbp', qty='0.25'} 21346
+# HELP bullion_platinum_london_sell_gbp The buy spot price of Platinum in the London exchange in currency GBP. Quantities are listed in kg.
+# TYPE bullion_platinum_london_sell_gbp gauge
+bullion_platinum_london_sell_gbp{security_id='PTXLN', comodity='Platinum', exchange='London', currency='gbp', qty='0.149'} 21580
+# HELP bullion_platinum_london_buy_eur The buy spot price of Platinum in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_platinum_london_buy_eur gauge
+bullion_platinum_london_buy_eur{security_id='PTXLN', comodity='Platinum', exchange='London', currency='eur', qty='0.747'} 23500
+# HELP bullion_platinum_london_sell_eur The buy spot price of Platinum in the London exchange in currency EUR. Quantities are listed in kg.
+# TYPE bullion_platinum_london_sell_eur gauge
+bullion_platinum_london_sell_eur{security_id='PTXLN', comodity='Platinum', exchange='London', currency='eur', qty='0.149'} 23680
+# HELP crypto_btc_usd The spot price of Bitcoin in US Dollars
+# TYPE crypto_btc_usd gauge
+crypto_btc_usd{currency1="Bitcoin", ticker1="BTC", currency2="US Dollar", ticker2="$", exchange="Coinbase"} 10583.79
 # HELP crypto_btc_eur The spot price of Bitcoin in Euro
 # TYPE crypto_btc_eur gauge
-crypto_btc_eur{currency1="Bitcoin", ticker1="BTC", currency2="Euro", ticker2="€", exchange="Coinbase", result="succeeded"} 8078.474036225
+crypto_btc_eur{currency1="Bitcoin", ticker1="BTC", currency2="Euro", ticker2="â‚¬", exchange="Coinbase"} 9031.49
+# HELP crypto_eth_usd The spot price of Ethereum in US Dollars
+# TYPE crypto_eth_usd gauge
+crypto_eth_usd{currency1="Ethereum", ticker1="ETH", currency2="USD Dollar", ticker2="$", exchange="Coinbase"} 339.11
 # HELP crypto_eth_eur The spot price of Ethereum in Euro
 # TYPE crypto_eth_eur gauge
-crypto_eth_eur{currency1="Ethereum", ticker1="ETH", currency2="Euro", ticker2="€", exchange="Coinbase", result="succeeded"} 201.329387355
+crypto_eth_eur{currency1="Ethereum", ticker1="ETH", currency2="Euro", ticker2="â‚¬", exchange="Coinbase"} 289.47
 ----

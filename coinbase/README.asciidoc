@@ -1,0 +1,10 @@
+== Coinbase API
+Docs: https://developers.coinbase.com/api/v2
+
+----
+curl https://api.coinbase.com/v2/prices/BTC-EUR/spot
+{"data":{"base":"BTC","currency":"EUR","amount":"8882.40801808"}}
+
+curl https://api.coinbase.com/v2/prices/ETH-EUR/spot
+{"data":{"base":"ETH","currency":"EUR","amount":"193.34586846"}}
+----

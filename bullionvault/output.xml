@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<envelope>
+  <message type="MARKET_DEPTH_A" version="0.1">
+    <market>
+      <pitches>
+        <pitch securityClassNarrative="GOLD" securityId="AUXZU" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.074" limit="63015"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.018" limit="63060"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXZU" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.021" limit="48780"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="2.44" limit="48800"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXZU" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.04" limit="52970"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.092" limit="53100"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXZU" considerationCurrency="JPY">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.132" limit="6638000"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.017" limit="6663000"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXLN" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.969" limit="62900"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.04" limit="63050"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXLN" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.023" limit="48780"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.04" limit="48890"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXLN" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.035" limit="52960"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.056" limit="53075"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXNY" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.965" limit="62860"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.188" limit="64303"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXNY" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.96" limit="48720"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.018" limit="50995"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXNY" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.955" limit="52880"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.71" limit="53130"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXTR" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.021" limit="62870"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.01" limit="63977"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXTR" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.088" limit="49351"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.01" limit="49991"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXTR" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.05" limit="52928"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.011" limit="54495"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXSG" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.969" limit="62900"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.968" limit="63150"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXSG" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.96" limit="48760"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.96" limit="48950"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="GOLD" securityId="AUXSG" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.955" limit="52920"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.963" limit="53150"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXZU" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="4.434" limit="871"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="60.456" limit="874"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXZU" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="20.401" limit="674"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="11.943" limit="677"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXZU" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="7.192" limit="732"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="51.841" limit="733"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXLN" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="4.434" limit="871"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="5" limit="873"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXLN" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.288" limit="675"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="29.995" limit="676"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXLN" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="9.177" limit="733"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="259.072" limit="735"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXTR" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="12.56" limit="873"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.307" limit="896"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXTR" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="6.624" limit="679"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.373" limit="698"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXTR" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="22.393" limit="742"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.467" limit="758"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXSG" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="3.11" limit="870"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="1.816" limit="888"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXSG" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="2" limit="674"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.2" limit="687"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="SILVER" securityId="AGXSG" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="28.26" limit="730"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="1.244" limit="746"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="PLATINUM" securityId="PTXLN" considerationCurrency="USD">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.635" limit="30590"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="1.207" limit="30758"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="PLATINUM" securityId="PTXLN" considerationCurrency="GBP">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.626" limit="23710"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.184" limit="23755"/>
+          </sellPrices>
+        </pitch>
+        <pitch securityClassNarrative="PLATINUM" securityId="PTXLN" considerationCurrency="EUR">
+          <buyPrices>
+            <price actionIndicator="B" quantity="0.648" limit="25740"/>
+          </buyPrices>
+          <sellPrices>
+            <price actionIndicator="S" quantity="0.156" limit="25785"/>
+          </sellPrices>
+        </pitch>
+      </pitches>
+    </market>
+  </message>
+</envelope>

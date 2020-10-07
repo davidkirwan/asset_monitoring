@@ -1,0 +1,27 @@
+== Bullion Vault API
+
+=== Resources
+- https://www.bullionvault.com/help/xml_api.html
+- [2] https://www.bullionvault.com/help/xml_api.html#SecurityIdList
+- Crystal Nokogiri style lib https://github.com/madeindjs/Crystagiri
+
+
+----
+curl https://www.bullionvault.com/view_market_xml.do
+----
+
+See [2] for full information:
+
+----
+Security ID 	Metal 	Location
+AUXZU 	Gold 	Zurich
+AUXLN 	Gold 	London
+AUXNY 	Gold 	New York
+AUXTR 	Gold 	Toronto
+AUXSG 	Gold 	Singapore
+AGXZU 	Silver 	Zurich
+AGXLN 	Silver 	London
+AGXTR 	Silver 	Toronto
+AGXSG 	Silver 	Singapore
+PTXLN 	Platinum 	London
+----

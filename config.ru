@@ -1,3 +1,3 @@
-require File.join(File.dirname(__FILE__), '/crypto_monitoring.rb')
+require File.join(File.dirname(__FILE__), '/asset_monitoring.rb')
 
-run Crypto::Monitoring
+run Asset::Monitoring
