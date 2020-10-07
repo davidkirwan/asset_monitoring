@@ -8,6 +8,6 @@ WORKDIR /app
 ADD . /app
 RUN bundle install --path /app/bundle/
 
-RUN chmod 755 /app/crypto_monitoring.rb
+RUN chmod 755 /app/asset_monitoring.rb
 
 ENTRYPOINT ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "8080"]
