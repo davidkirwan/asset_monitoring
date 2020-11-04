@@ -27,16 +27,16 @@ module Coinbase
         res = <<-RESPONSE
 # HELP crypto_btc_usd The spot price of Bitcoin in US Dollars
 # TYPE crypto_btc_usd gauge
-crypto_btc_usd{currency1="Bitcoin", ticker1="BTC", currency2="US Dollar", ticker2="$", exchange="Coinbase"} #{btc_usd_spot}
+crypto_btc_usd{currency1="Bitcoin", ticker1="BTC", currency2="US Dollar", ticker2="USD", exchange="Coinbase"} #{btc_usd_spot}
 # HELP crypto_btc_eur The spot price of Bitcoin in Euro
 # TYPE crypto_btc_eur gauge
-crypto_btc_eur{currency1="Bitcoin", ticker1="BTC", currency2="Euro", ticker2="€", exchange="Coinbase"} #{btc_eur_spot}
+crypto_btc_eur{currency1="Bitcoin", ticker1="BTC", currency2="Euro", ticker2="EURO", exchange="Coinbase"} #{btc_eur_spot}
 # HELP crypto_eth_usd The spot price of Ethereum in US Dollars
 # TYPE crypto_eth_usd gauge
-crypto_eth_usd{currency1="Ethereum", ticker1="ETH", currency2="USD Dollar", ticker2="$", exchange="Coinbase"} #{eth_usd_spot}
+crypto_eth_usd{currency1="Ethereum", ticker1="ETH", currency2="USD Dollar", ticker2="USD", exchange="Coinbase"} #{eth_usd_spot}
 # HELP crypto_eth_eur The spot price of Ethereum in Euro
 # TYPE crypto_eth_eur gauge
-crypto_eth_eur{currency1="Ethereum", ticker1="ETH", currency2="Euro", ticker2="€", exchange="Coinbase"} #{eth_eur_spot}
+crypto_eth_eur{currency1="Ethereum", ticker1="ETH", currency2="Euro", ticker2="EURO", exchange="Coinbase"} #{eth_eur_spot}
         RESPONSE
       rescue Exception => e
         settings.log.debug(e)
