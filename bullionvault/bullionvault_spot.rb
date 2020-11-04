@@ -47,10 +47,10 @@ module BullionVault
           response += <<-RESPONSE
 # HELP #{gauge_buy } #{description_buy}
 # TYPE #{gauge_buy} gauge
-#{gauge_buy}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{buy_qty}'} #{buy_price}
+#{gauge_buy}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}", qty="#{buy_qty}"} #{buy_price}
 # HELP #{gauge_sell } #{description_sell}
 # TYPE #{gauge_sell} gauge
-#{gauge_sell}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{sell_qty}'} #{sell_price}
+#{gauge_sell}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}", qty="#{sell_qty}"} #{sell_price}
 RESPONSE
 	rescue Exception => e
 	  settings.log.debug(e)
