@@ -30,27 +30,35 @@ module BullionVault
 	  currency = i.attributes['considerationCurrency']
 	  gauge_buy = ex['gauge_name'] + "buy_" + currency.to_s.downcase
 	  gauge_sell = ex['gauge_name'] + "sell_" + currency.to_s.downcase
-	  description_buy = "The buy spot price of #{comodity} in the #{exchange} exchange in currency #{currency}. Quantities are listed in kg."
-	  description_sell = "The buy spot price of #{comodity} in the #{exchange} exchange in currency #{currency}. Quantities are listed in kg."
+	  description_buy = "The buy spot price of #{comodity} in the #{exchange} exchange in currency #{currency}."
+	  description_buy_qty = "The quantity of #{comodity} bought in the #{exchange} exchange in currency #{currency}. Quantities are listed in kg."
+	  description_sell = "The sell spot price of #{comodity} in the #{exchange} exchange in currency #{currency}."
+	  description_sell = "The quantity of #{comodity} sold in the #{exchange} exchange in currency #{currency}. Quantities are listed in kg."
 	  buy_price = i.at_xpath("buyPrices").at_xpath("price").attributes["limit"].value
 	  buy_qty = i.at_xpath("buyPrices").at_xpath("price").attributes["quantity"].value
 	  sell_price = i.at_xpath("sellPrices").at_xpath("price").attributes["limit"].value
 	  sell_qty = i.at_xpath("sellPrices").at_xpath("price").attributes["quantity"].value
 
-	  settings.log.debug "# HELP #{gauge_buy } #{description_buy}"
-	  settings.log.debug "# TYPE #{gauge_buy} gauge"
-	  settings.log.debug "#{gauge_buy}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{buy_qty}'} #{buy_price}"
-	  settings.log.debug "# HELP #{gauge_sell } #{description_sell}"
-	  settings.log.debug "# TYPE #{gauge_sell} gauge"
-	  settings.log.debug "#{gauge_sell}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{sell_qty}'} #{sell_price}"
+	  #settings.log.debug "# HELP #{gauge_buy } #{description_buy}"
+	  #settings.log.debug "# TYPE #{gauge_buy} gauge"
+	  #settings.log.debug "#{gauge_buy}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{buy_qty}'} #{buy_price}"
+	  #settings.log.debug "# HELP #{gauge_sell } #{description_sell}"
+	  #settings.log.debug "# TYPE #{gauge_sell} gauge"
+	  #settings.log.debug "#{gauge_sell}{security_id='#{ex["security_id"]}', comodity='#{comodity}', exchange='#{exchange}', currency='#{currency.to_s.downcase}', qty='#{sell_qty}'} #{sell_price}"
 
           response += <<-RESPONSE
-# HELP #{gauge_buy } #{description_buy}
+# HELP #{gauge_buy} #{description_buy}
 # TYPE #{gauge_buy} gauge
-#{gauge_buy}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}", qty="#{buy_qty}"} #{buy_price}
-# HELP #{gauge_sell } #{description_sell}
+#{gauge_buy}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}"} #{buy_price}
+# HELP #{gauge_buy}_qty #{description_buy_qty}
+# TYPE #{gauge_buy}_qty gauge
+#{gauge_buy}_qty{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}"} #{buy_qty}
+# HELP #{gauge_sell} #{description_sell}
 # TYPE #{gauge_sell} gauge
-#{gauge_sell}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}", qty="#{sell_qty}"} #{sell_price}
+#{gauge_sell}{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}"} #{sell_price}
+# HELP #{gauge_sell}_qty #{description_sell}
+# TYPE #{gauge_sell}_qty gauge
+#{gauge_sell}_qty{security_id="#{ex["security_id"]}", comodity="#{comodity}", exchange="#{exchange}", currency="#{currency.to_s.downcase}"} #{sell_qty}
 RESPONSE
 	rescue Exception => e
 	  settings.log.debug(e)
