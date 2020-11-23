@@ -1,5 +1,5 @@
 # Openshift 4 Monitoring Stack
-### David Kirwan <dkirwan@redhat.com>
+### David Kirwan
 
 
 #### a quick overview
@@ -160,16 +160,9 @@ Alertmanager is automagically configured by default to query the Prometheus inst
 # Demo
 Quick demo with all these features I've spoken about so far. See this sample application I've prepared earlier:
 
-
-  [2]: https://github.com/davidkirwan/asset_monitoring
-
-
-# The End
-
-
-### Thanks!
-
-
 - Built using [presenting.vim][1]
 
   [1]: https://github.com/sotte/presenting.vim
+  [2]: https://github.com/davidkirwan/asset_monitoring
+
+### Fin!
