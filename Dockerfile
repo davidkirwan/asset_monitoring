@@ -1,5 +1,5 @@
 FROM ruby:2.6.5
-MAINTAINER David Kirwan <davidkirwanirl@gmail.com>
+MAINTAINER David Kirwan <dkirwan@redhat.com>
 
 
 RUN mkdir /app
