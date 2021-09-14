@@ -18,7 +18,7 @@ spec:
       containers:
         - name: crypto
           image: >-
-            quay.io/dkirwan_redhat/asset_monitoring:v0.0.2
+            quay.io/dkirwan/asset_monitoring:v0.0.1
           ports:
             - containerPort: 8080
               protocol: TCP
