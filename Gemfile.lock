@@ -1,0 +1,38 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    curb (0.9.11)
+    json (2.5.1)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.8)
+    nokogiri (1.12.5-x86_64-linux)
+      racc (~> 1.4)
+    open-uri (0.1.0)
+    puma (5.5.0)
+      nio4r (~> 2.0)
+    racc (1.5.2)
+    rack (2.2.3)
+    rack-protection (2.1.0)
+      rack
+    ruby2_keywords (0.0.5)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
+    tilt (2.0.10)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  curb
+  json
+  nokogiri (>= 1.12.5)
+  open-uri
+  puma
+  sinatra
+
+BUNDLED WITH
+   2.2.27
