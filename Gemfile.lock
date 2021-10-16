@@ -2,14 +2,18 @@ GEM
   remote: https://rubygems.org/
   specs:
     curb (0.9.11)
-    json (2.5.1)
+    date (3.2.0)
+    json (2.6.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.8)
     nokogiri (1.12.5-x86_64-linux)
       racc (~> 1.4)
-    open-uri (0.1.0)
-    puma (5.5.1)
+    open-uri (0.2.0)
+      stringio
+      time
+      uri
+    puma (5.5.2)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -21,7 +25,11 @@ GEM
       rack (~> 2.2)
       rack-protection (= 2.1.0)
       tilt (~> 2.0)
+    stringio (3.0.0)
     tilt (2.0.10)
+    time (0.2.0)
+      date
+    uri (0.10.1)
 
 PLATFORMS
   x86_64-linux
