@@ -13,7 +13,7 @@ GEM
       stringio
       time
       uri
-    puma (5.5.2)
+    puma (5.6.2)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
