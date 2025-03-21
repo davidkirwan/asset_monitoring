@@ -9,7 +9,7 @@ GEM
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.7.3)
-    nokogiri (1.16.5-x86_64-linux)
+    nokogiri (1.18.4-x86_64-linux-gnu)
       racc (~> 1.4)
     open-uri (0.2.0)
       stringio
@@ -17,7 +17,7 @@ GEM
       uri
     puma (5.6.9)
       nio4r (~> 2.0)
-    racc (1.7.3)
+    racc (1.8.1)
     rack (3.1.8)
     rack-protection (4.1.0)
       base64 (>= 0.1.0)
