@@ -1,47 +1,86 @@
+# frozen_string_literal: true
+
+require 'faraday'
+require 'json'
+
 module Coinbase
   class << self
+    BASE_URL = 'https://api.coinbase.com/v2/prices'.freeze
+    EXCHANGE = 'Coinbase'.freeze
+
+    # Supported cryptocurrency pairs
+    CRYPTO_PAIRS = [
+      { symbol: 'BTC', name: 'Bitcoin', currencies: %w[USD EUR] },
+      { symbol: 'ETH', name: 'Ethereum', currencies: %w[USD EUR] }
+    ].freeze
+
     def spot(settings)
-      begin
-        # BTC
-        btc_usd  = Curl.get("https://api.coinbase.com/v2/prices/BTC-USD/spot")
-        btc_usd_json = JSON.parse(btc_usd.body_str)
-        btc_usd_spot = btc_usd_json["data"]["amount"]
-        settings.log.debug(btc_usd_spot)
+      settings.log.debug('Fetching Coinbase data')
+      
+      connection = create_connection
+      metrics = []
 
-        btc_eur = Curl.get("https://api.coinbase.com/v2/prices/BTC-EUR/spot")
-        btc_eur_json = JSON.parse(btc_eur.body_str)
-        btc_eur_spot = btc_eur_json["data"]["amount"]
-        settings.log.debug(btc_eur_spot)
-
-        # ETH
-        eth_usd = Curl.get("https://api.coinbase.com/v2/prices/ETH-USD/spot")
-        eth_usd_json = JSON.parse(eth_usd.body_str)
-        eth_usd_spot = eth_usd_json["data"]["amount"]
-        settings.log.debug(eth_usd_spot)
-
-        eth_eur = Curl.get("https://api.coinbase.com/v2/prices/ETH-EUR/spot")
-        eth_eur_json = JSON.parse(eth_eur.body_str)
-        eth_eur_spot = eth_eur_json["data"]["amount"]
-        settings.log.debug(eth_eur_spot)
-
-        res = <<-RESPONSE
-# HELP crypto_btc_usd The spot price of Bitcoin in US Dollars
-# TYPE crypto_btc_usd gauge
-crypto_btc_usd{currency1="Bitcoin", ticker1="BTC", currency2="US Dollar", ticker2="USD", exchange="Coinbase"} #{btc_usd_spot}
-# HELP crypto_btc_eur The spot price of Bitcoin in Euro
-# TYPE crypto_btc_eur gauge
-crypto_btc_eur{currency1="Bitcoin", ticker1="BTC", currency2="Euro", ticker2="EURO", exchange="Coinbase"} #{btc_eur_spot}
-# HELP crypto_eth_usd The spot price of Ethereum in US Dollars
-# TYPE crypto_eth_usd gauge
-crypto_eth_usd{currency1="Ethereum", ticker1="ETH", currency2="USD Dollar", ticker2="USD", exchange="Coinbase"} #{eth_usd_spot}
-# HELP crypto_eth_eur The spot price of Ethereum in Euro
-# TYPE crypto_eth_eur gauge
-crypto_eth_eur{currency1="Ethereum", ticker1="ETH", currency2="Euro", ticker2="EURO", exchange="Coinbase"} #{eth_eur_spot}
-        RESPONSE
-      rescue Exception => e
-        settings.log.debug(e)
-        raise e
+      CRYPTO_PAIRS.each do |crypto|
+        crypto[:currencies].each do |currency|
+          begin
+            price_data = fetch_price(connection, crypto[:symbol], currency)
+            metrics << generate_crypto_metrics(crypto, currency, price_data)
+          rescue StandardError => e
+            settings.log.warn("Error fetching #{crypto[:symbol]}-#{currency}: #{e.message}")
+            next
+          end
+        end
       end
+
+      metrics.join("\n")
+    rescue StandardError => e
+      settings.log.error("Coinbase error: #{e.message}")
+      raise e
+    end
+
+    private
+
+    def create_connection
+      Faraday.new do |conn|
+        conn.request :retry, max: 3, interval: 1
+        conn.options.timeout = 30
+        conn.headers['User-Agent'] = 'Asset-Monitoring/1.0'
+      end
+    end
+
+    def fetch_price(connection, symbol, currency)
+      url = "#{BASE_URL}/#{symbol}-#{currency}/spot"
+      response = connection.get(url)
+      
+      unless response.success?
+        raise "Coinbase API returned #{response.status}: #{response.body}"
+      end
+
+      data = JSON.parse(response.body)
+      
+      unless data['data'] && data['data']['amount']
+        raise "Invalid response format from Coinbase API"
+      end
+
+      data['data']['amount']
+    rescue JSON::ParserError => e
+      raise "Invalid JSON response from Coinbase API: #{e.message}"
+    end
+
+    def generate_crypto_metrics(crypto, currency, price)
+      symbol = crypto[:symbol]
+      name = crypto[:name]
+      currency_name = currency == 'USD' ? 'US Dollar' : 'Euro'
+      ticker = currency == 'USD' ? 'USD' : 'EUR'
+      
+      metric_name = "crypto_#{symbol.downcase}_#{currency.downcase}"
+      labels = %(currency1="#{name}", ticker1="#{symbol}", currency2="#{currency_name}", ticker2="#{ticker}", exchange="#{EXCHANGE}")
+
+      <<~METRICS
+        # HELP #{metric_name} The spot price of #{name} in #{currency_name}
+        # TYPE #{metric_name} gauge
+        #{metric_name}{#{labels}} #{price}
+      METRICS
     end
   end
 end

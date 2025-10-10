@@ -1,27 +1,96 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  labels:
-    app: crypto
-  name: crypto-monitoring-alerts
+  name: asset-monitoring-alerts
   namespace: monitoring-example
+  labels:
+    app: asset-monitoring
+    app.kubernetes.io/name: asset-monitoring
 spec:
   groups:
-    - name: CryptoMonitoringAlerts
+    - name: AssetMonitoringAlerts
       rules:
-        - alert: BitcoinOverNineK
+        # Application health alerts
+        - alert: AssetMonitoringDown
           annotations:
-            message: >
-              The price of Bitcoin has gone above €9000
-          expr: crypto_btc_eur > 9000
+            summary: "Asset Monitoring service is down"
+            description: "Asset Monitoring service has been down for more than 5 minutes"
+          expr: up{job="asset-monitoring"} == 0
+          for: 5m
+          labels:
+            severity: critical
+
+        - alert: AssetMonitoringHighErrorRate
+          annotations:
+            summary: "Asset Monitoring high error rate"
+            description: "Asset Monitoring service is returning errors at {{ $value }}%"
+          expr: rate(http_requests_total{job="asset-monitoring",status=~"5.."}[5m]) / rate(http_requests_total{job="asset-monitoring"}[5m]) * 100 > 10
+          for: 2m
+          labels:
+            severity: warning
+
+        # Cryptocurrency price alerts
+        - alert: BitcoinPriceHigh
+          annotations:
+            summary: "Bitcoin price is high"
+            description: "Bitcoin price has gone above €{{ $value }}"
+          expr: crypto_btc_eur > 90000
           for: 5m
           labels:
             severity: warning
-        - alert: EthereumOverTwoFifty
+
+        - alert: BitcoinPriceLow
           annotations:
-            message: |
-              The price of Ethereum has gone above €250
-          expr: crypto_eth_eur > 250
+            summary: "Bitcoin price is low"
+            description: "Bitcoin price has dropped below €{{ $value }}"
+          expr: crypto_btc_eur < 20000
           for: 5m
           labels:
             severity: warning
+
+        - alert: EthereumPriceHigh
+          annotations:
+            summary: "Ethereum price is high"
+            description: "Ethereum price has gone above €{{ $value }}"
+          expr: crypto_eth_eur > 5000
+          for: 5m
+          labels:
+            severity: warning
+
+        - alert: EthereumPriceLow
+          annotations:
+            summary: "Ethereum price is low"
+            description: "Ethereum price has dropped below €{{ $value }}"
+          expr: crypto_eth_eur < 1000
+          for: 5m
+          labels:
+            severity: warning
+
+        # Precious metals price alerts
+        - alert: GoldPriceHigh
+          annotations:
+            summary: "Gold price is high"
+            description: "Gold price has gone above €{{ $value }} per kg"
+          expr: bullion_gold_london_buy_eur > 60000
+          for: 5m
+          labels:
+            severity: warning
+
+        - alert: SilverPriceHigh
+          annotations:
+            summary: "Silver price is high"
+            description: "Silver price has gone above €{{ $value }} per kg"
+          expr: bullion_silver_london_buy_eur > 1000
+          for: 5m
+          labels:
+            severity: warning
+
+        # Data freshness alerts
+        - alert: AssetMonitoringStaleData
+          annotations:
+            summary: "Asset Monitoring data is stale"
+            description: "Asset Monitoring data is older than 10 minutes"
+          expr: time() - asset_monitoring_last_successful_fetch_seconds > 600
+          for: 2m
+          labels:
+            severity: critical

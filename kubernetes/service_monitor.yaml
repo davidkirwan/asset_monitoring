@@ -1,15 +1,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: crypto-monitoring-service-monitor
+  name: asset-monitoring
   namespace: monitoring-example
+  labels:
+    app: asset-monitoring
+    app.kubernetes.io/name: asset-monitoring
 spec:
-  endpoints:
-    - bearerTokenSecret:
-        key: ''
-      interval: 30s
-      port: 8080-tcp
-      scheme: http
   selector:
     matchLabels:
-      app: crypto
+      app: asset-monitoring
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scheme: http
+      scrapeTimeout: 10s

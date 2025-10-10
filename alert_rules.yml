@@ -1,0 +1,87 @@
+groups:
+  - name: asset_monitoring_alerts
+    rules:
+      # Application health alerts
+      - alert: AssetMonitoringDown
+        expr: up{job="asset-monitoring"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Asset Monitoring service is down"
+          description: "Asset Monitoring service has been down for more than 5 minutes"
+
+      - alert: AssetMonitoringHighErrorRate
+        expr: rate(http_requests_total{job="asset-monitoring",status=~"5.."}[5m]) / rate(http_requests_total{job="asset-monitoring"}[5m]) * 100 > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Asset Monitoring high error rate"
+          description: "Asset Monitoring service is returning errors at {{ $value }}%"
+
+      # Cryptocurrency price alerts
+      - alert: BitcoinPriceHigh
+        expr: crypto_btc_eur > 90000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bitcoin price is high"
+          description: "Bitcoin price has gone above €{{ $value }}"
+
+      - alert: BitcoinPriceLow
+        expr: crypto_btc_eur < 20000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bitcoin price is low"
+          description: "Bitcoin price has dropped below €{{ $value }}"
+
+      - alert: EthereumPriceHigh
+        expr: crypto_eth_eur > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Ethereum price is high"
+          description: "Ethereum price has gone above €{{ $value }}"
+
+      - alert: EthereumPriceLow
+        expr: crypto_eth_eur < 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Ethereum price is low"
+          description: "Ethereum price has dropped below €{{ $value }}"
+
+      # Precious metals price alerts
+      - alert: GoldPriceHigh
+        expr: bullion_gold_london_buy_eur > 60000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Gold price is high"
+          description: "Gold price has gone above €{{ $value }} per kg"
+
+      - alert: SilverPriceHigh
+        expr: bullion_silver_london_buy_eur > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Silver price is high"
+          description: "Silver price has gone above €{{ $value }} per kg"
+
+      # Data freshness alerts
+      - alert: AssetMonitoringStaleData
+        expr: time() - asset_monitoring_last_successful_fetch_seconds > 600
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Asset Monitoring data is stale"
+          description: "Asset Monitoring data is older than 10 minutes"
