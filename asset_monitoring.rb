@@ -43,22 +43,22 @@ module Asset
 
     # Main metrics endpoint
     get '/metrics' do
-      content_type :text/plain
-      
+      content_type 'text/plain'
+
       begin
         metrics = []
-        
+
         # Fetch BullionVault metrics
         bullionvault_metrics = fetch_bullionvault_metrics
         metrics << bullionvault_metrics if bullionvault_metrics
-        
+
         # Fetch Coinbase metrics
         coinbase_metrics = fetch_coinbase_metrics
         metrics << coinbase_metrics if coinbase_metrics
-        
+
         # Add application metrics
         metrics << generate_app_metrics
-        
+
         [200, metrics.join("\n")]
       rescue StandardError => e
         settings.log.error("Error fetching metrics: #{e.message}")
@@ -68,12 +68,12 @@ module Asset
     end
 
     not_found do
-      content_type :text/plain
+      content_type 'text/plain'
       [404, '404 not found']
     end
 
     error do
-      content_type :text/plain
+      content_type 'text/plain'
       settings.log.error("Application error: #{env['sinatra.error'].message}")
       [500, '500 internal server error']
     end
@@ -101,7 +101,7 @@ module Asset
         # HELP asset_monitoring_app_info Application information
         # TYPE asset_monitoring_app_info gauge
         asset_monitoring_app_info{version="#{ENV.fetch('APP_VERSION', 'unknown')}", environment="#{settings.environment}"} 1
-        
+
         # HELP asset_monitoring_last_successful_fetch_seconds Timestamp of last successful metrics fetch
         # TYPE asset_monitoring_last_successful_fetch_seconds gauge
         asset_monitoring_last_successful_fetch_seconds #{Time.now.to_i}
