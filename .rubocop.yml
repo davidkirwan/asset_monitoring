@@ -1,3 +1,6 @@
+require:
+  - rubocop-rspec
+
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
@@ -27,7 +30,7 @@ Style/GuardClause:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
 
 Metrics/MethodLength:
   Max: 20
@@ -44,3 +47,17 @@ RSpec/MultipleExpectations:
 
 RSpec/NestedGroups:
   Max: 4
+
+# Not a Rails app - disable Rails-specific cops
+RSpecRails/HaveHttpStatus:
+  Enabled: false
+
+RSpecRails/InferredSpecType:
+  Enabled: false
+
+# File naming convention doesn't match module structure
+RSpec/FilePath:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false

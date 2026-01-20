@@ -1,50 +1,29 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe BullionVault do
   describe '.spot' do
-    let(:settings) { double('settings', log: double('logger', debug: nil)) }
+    let(:logger) { instance_double(Logger, debug: nil, warn: nil) }
+    let(:settings) { instance_double(Asset::Monitoring, log: logger) }
 
-    context 'with successful API response' do
+    context 'with successful API response', vcr: { cassette_name: 'bullionvault_success' } do
+      subject(:result) { described_class.spot(settings) }
+
       it 'returns prometheus formatted metrics' do
-        VCR.use_cassette('bullionvault_success') do
-          result = described_class.spot(settings)
-          
-          expect(result).to include('# HELP')
-          expect(result).to include('# TYPE')
-          expect(result).to include('bullion_gold_')
-          expect(result).to include('bullion_silver_')
-        end
+        expect(result).to include('# HELP', '# TYPE', 'bullion_gold_', 'bullion_silver_')
       end
 
       it 'includes all expected exchanges' do
-        VCR.use_cassette('bullionvault_success') do
-          result = described_class.spot(settings)
-          
-          expect(result).to include('Zurich')
-          expect(result).to include('London')
-          expect(result).to include('New York')
-          expect(result).to include('Toronto')
-          expect(result).to include('Singapore')
-        end
+        expect(result).to include('Zurich', 'London', 'New York', 'Toronto', 'Singapore')
       end
 
       it 'includes all expected metals' do
-        VCR.use_cassette('bullionvault_success') do
-          result = described_class.spot(settings)
-          
-          expect(result).to include('Gold')
-          expect(result).to include('Silver')
-          expect(result).to include('Platinum')
-        end
+        expect(result).to include('Gold', 'Silver', 'Platinum')
       end
 
       it 'includes buy and sell prices' do
-        VCR.use_cassette('bullionvault_success') do
-          result = described_class.spot(settings)
-          
-          expect(result).to include('buy_')
-          expect(result).to include('sell_')
-        end
+        expect(result).to include('buy_', 'sell_')
       end
     end
 
@@ -57,12 +36,12 @@ RSpec.describe BullionVault do
       end
     end
 
-    context 'with invalid XML response' do
-      it 'handles parsing errors gracefully' do
+    context 'with invalid XML structure' do
+      it 'raises an exception' do
         stub_request(:get, 'https://www.bullionvault.com/view_market_xml.do')
           .to_return(status: 200, body: '<invalid>xml</invalid>')
 
-        expect { described_class.spot(settings) }.to raise_error(StandardError)
+        expect { described_class.spot(settings) }.to raise_error(StandardError, /no pitch data/)
       end
     end
   end
