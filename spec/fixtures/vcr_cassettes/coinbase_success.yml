@@ -1,0 +1,375 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.coinbase.com/v2/prices/BTC-USD/spot
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 20 Jan 2026 17:39:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Headers:
+      - Authorization, Content-Type, Accept, Second-Factor-Proof-Token, Client-Id,
+        Access-Token, X-Cb-Project-Name, X-Cb-Is-Logged-In, X-Cb-Platform, X-Cb-Session-Uuid,
+        X-Cb-Pagekey, X-Cb-UJS, Fingerprint-Tokens, X-Cb-Device-Id, X-Cb-Version-Name
+      Access-Control-Allow-Methods:
+      - GET,POST,DELETE,PUT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Private-Network:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - ''
+      Access-Control-Max-Age:
+      - '7200'
+      Cache-Control:
+      - no-store
+      Grpc-Metadata-Cache-Control:
+      - public, max-age=60
+      Grpc-Metadata-Content-Type:
+      - application/grpc
+      Grpc-Metadata-Vary:
+      - Accept-Language
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Trace-Id:
+      - '2663611575583001505'
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Forwarded-For:
+      - asset-stats.cbhq.net
+      X-Forwarded-Port:
+      - '8001'
+      X-Forwarded-Proto:
+      - https
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Last-Modified:
+      - Tue, 20 Jan 2026 17:39:23 GMT
+      Cf-Cache-Status:
+      - HIT
+      Age:
+      - '1'
+      Set-Cookie:
+      - __cf_bm=utFla8Mq2UvmK9TyMZHrIK1e8.5S8cyyPZkjVEcI9r8-1768930765-1.0.1.1-RHrj89cp.hoRIZsbgHZ7JhJfKAj65lw5erooqjph6WUv7BpE7doK2W9UbOdbWPbt7VPSpWSnZ5lqswKxx56eCgeZ05KWFp6wbfo7KayuMlY;
+        path=/; expires=Tue, 20-Jan-26 18:09:25 GMT; domain=.coinbase.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=oU.ep2cieoDT2aIkmIfYiWnreLdGXB_SpCpnSa_wSCw-1768930765810-0.0.1.1-604800000;
+        path=/; domain=.coinbase.com; HttpOnly; Secure; SameSite=None
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=vIQTziHTTo5EVg8FmYRC8lnLO2rjw%2Fz8lrCamufiXkuGDLBTgoClRYJYfafGHsBfgmyUXRTtlauODJloDGyFD3J%2B4ipA5PfNYABe42T1N6gyIk6oD55gn%2FMCQXkYeZiyzHI%3D"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c1059e63979bdf4-DUB
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"amount":"89747.995","base":"BTC","currency":"USD"}}'
+  recorded_at: Tue, 20 Jan 2026 17:39:26 GMT
+- request:
+    method: get
+    uri: https://api.coinbase.com/v2/prices/BTC-EUR/spot
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 20 Jan 2026 17:39:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Headers:
+      - Authorization, Content-Type, Accept, Second-Factor-Proof-Token, Client-Id,
+        Access-Token, X-Cb-Project-Name, X-Cb-Is-Logged-In, X-Cb-Platform, X-Cb-Session-Uuid,
+        X-Cb-Pagekey, X-Cb-UJS, Fingerprint-Tokens, X-Cb-Device-Id, X-Cb-Version-Name
+      Access-Control-Allow-Methods:
+      - GET,POST,DELETE,PUT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Private-Network:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - ''
+      Access-Control-Max-Age:
+      - '7200'
+      Cache-Control:
+      - no-store
+      Grpc-Metadata-Cache-Control:
+      - public, max-age=60
+      Grpc-Metadata-Content-Type:
+      - application/grpc
+      Grpc-Metadata-Vary:
+      - Accept-Language
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Trace-Id:
+      - '2313514030916151291'
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Forwarded-For:
+      - asset-stats.cbhq.net
+      X-Forwarded-Port:
+      - '8001'
+      X-Forwarded-Proto:
+      - https
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Last-Modified:
+      - Tue, 20 Jan 2026 17:39:27 GMT
+      Cf-Cache-Status:
+      - HIT
+      Set-Cookie:
+      - __cf_bm=5ASjKXtUNZmXDjGhRw_QdyETWjYqUBvgan1.9oXye.g-1768930767-1.0.1.1-KepPvDcafRd_1q6jWFqxTJAB_RTfTy_EzxUweqV3Wy7JiZswEmePtN4mpKVPe3q.CSXMQDvHZi1S_lW7kMMvb3h8RrG1KtelFOE8h2BzJ58;
+        path=/; expires=Tue, 20-Jan-26 18:09:27 GMT; domain=.coinbase.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=IBTv4TiQItb0qELocfMh71HGEIlq12e56vfyZjwdH6U-1768930767655-0.0.1.1-604800000;
+        path=/; domain=.coinbase.com; HttpOnly; Secure; SameSite=None
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=16ZfTjwq8yPQWlm7NN3bPhgJe1jZTK8%2FXJFDkuZeCx4XN9eICkNuhKjGbki%2FkWXZ6s6uHNy68sqpUv5iY23jDS5zt6aBthuXCo6Ov5arsOlcwd%2FrHiYWH8bieVlKFR9RPQA%3D"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c1059f01e84122c-DUB
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"amount":"76548.97","base":"BTC","currency":"EUR"}}'
+  recorded_at: Tue, 20 Jan 2026 17:39:28 GMT
+- request:
+    method: get
+    uri: https://api.coinbase.com/v2/prices/ETH-USD/spot
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 20 Jan 2026 17:39:29 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Headers:
+      - Authorization, Content-Type, Accept, Second-Factor-Proof-Token, Client-Id,
+        Access-Token, X-Cb-Project-Name, X-Cb-Is-Logged-In, X-Cb-Platform, X-Cb-Session-Uuid,
+        X-Cb-Pagekey, X-Cb-UJS, Fingerprint-Tokens, X-Cb-Device-Id, X-Cb-Version-Name
+      Access-Control-Allow-Methods:
+      - GET,POST,DELETE,PUT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Private-Network:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - ''
+      Access-Control-Max-Age:
+      - '7200'
+      Cache-Control:
+      - no-store
+      Grpc-Metadata-Cache-Control:
+      - public, max-age=60
+      Grpc-Metadata-Content-Type:
+      - application/grpc
+      Grpc-Metadata-Vary:
+      - Accept-Language
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Trace-Id:
+      - '3987944504016922898'
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Forwarded-For:
+      - asset-stats.cbhq.net
+      X-Forwarded-Port:
+      - '8001'
+      X-Forwarded-Proto:
+      - https
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Last-Modified:
+      - Tue, 20 Jan 2026 17:39:28 GMT
+      Cf-Cache-Status:
+      - HIT
+      Age:
+      - '1'
+      Set-Cookie:
+      - __cf_bm=syuW2l3D.r_xynrqE7cG.2ULM8YHZpd1BAJ8UY7xfRA-1768930769-1.0.1.1-CtsGtADLFbQQW0BZcS_gSJEtBbNohplmZsrBA.BE_vmDE0wu_C28fU7d14ElVEoMPyhOnUPemiWpwrlYSjG6E2DLVd2ceBZ6XkfrsUi_h3c;
+        path=/; expires=Tue, 20-Jan-26 18:09:29 GMT; domain=.coinbase.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=ON6wb2QqHcB1esmd5JSQ4IgPomyUddPJyOUtN4msbHA-1768930769015-0.0.1.1-604800000;
+        path=/; domain=.coinbase.com; HttpOnly; Secure; SameSite=None
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=lNtfjwNtdp1GqmrFq%2FCFhIbJsF9ZZ3UMUV5jarHipehQSZtqGPL8Yi7LKaPaEqHetC9H%2FYnzImi85dCpVO5TRNA7eosjj5y9YCXts%2Bll7jgr5onA4Ct%2Fw22LvnIDtzPZ%2FvM%3D"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c1059fa4cb62b1d-DUB
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"amount":"2993.495","base":"ETH","currency":"USD"}}'
+  recorded_at: Tue, 20 Jan 2026 17:39:29 GMT
+- request:
+    method: get
+    uri: https://api.coinbase.com/v2/prices/ETH-EUR/spot
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 20 Jan 2026 17:39:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Headers:
+      - Authorization, Content-Type, Accept, Second-Factor-Proof-Token, Client-Id,
+        Access-Token, X-Cb-Project-Name, X-Cb-Is-Logged-In, X-Cb-Platform, X-Cb-Session-Uuid,
+        X-Cb-Pagekey, X-Cb-UJS, Fingerprint-Tokens, X-Cb-Device-Id, X-Cb-Version-Name
+      Access-Control-Allow-Methods:
+      - GET,POST,DELETE,PUT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Private-Network:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - ''
+      Access-Control-Max-Age:
+      - '7200'
+      Cache-Control:
+      - no-store
+      Grpc-Metadata-Cache-Control:
+      - public, max-age=60
+      Grpc-Metadata-Content-Type:
+      - application/grpc
+      Grpc-Metadata-Vary:
+      - Accept-Language
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Trace-Id:
+      - '5651000566332630356'
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Forwarded-For:
+      - asset-stats.cbhq.net
+      X-Forwarded-Port:
+      - '8001'
+      X-Forwarded-Proto:
+      - https
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      Last-Modified:
+      - Tue, 20 Jan 2026 17:39:29 GMT
+      Cf-Cache-Status:
+      - HIT
+      Set-Cookie:
+      - __cf_bm=wesoUxt2b3FRnVylQ21BtLRxWPO1iw7feqprijadUE0-1768930770-1.0.1.1-qsbhZ.nJzYBA7YGV0F.vmnIfOP0_tg3QvIZbKlMCqyC6mTQsdf85bmfSmDR9gX.jI86o.nF53FD5lG6hB18t6uGZOsiCbFQTC_dSFB7DQQQ;
+        path=/; expires=Tue, 20-Jan-26 18:09:30 GMT; domain=.coinbase.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=qGrF5OK7c_tuU8F8hbl8JL2yNdo4npzCLCvQ7aoJhJk-1768930770538-0.0.1.1-604800000;
+        path=/; domain=.coinbase.com; HttpOnly; Secure; SameSite=None
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=ZfXlU5mX9nu7zmy5SLUfO3%2BgtBng5S%2Fxkh0x17EfSO%2BrGP6%2FsdLfxGY%2Bao6Q%2BKirpAahDN6j6xUivlNqmW7EwWQS%2Bx7e3ztWGobeQ5SLBeMnXG5%2BNBj%2FoHhMnqrlbL7rVss%3D"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9c105a023c8f9090-DUB
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"amount":"2551.305","base":"ETH","currency":"EUR"}}'
+  recorded_at: Tue, 20 Jan 2026 17:39:31 GMT
+recorded_with: VCR 6.3.1

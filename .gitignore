@@ -17,9 +17,6 @@
 # SimpleCov
 /coverage/
 
-# VCR
-/spec/fixtures/vcr_cassettes/
-
 # Logs
 *.log
 
