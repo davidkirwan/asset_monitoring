@@ -15,6 +15,11 @@ task :coverage do
   Rake::Task['spec'].invoke
 end
 
+desc 'Install dependencies'
+task :install do
+  sh 'bundle install'
+end
+
 desc 'Start the application server'
 task :server do
   sh 'bundle exec rackup -p 8080'
@@ -40,6 +45,9 @@ task :default do
   puts <<~HELP
     Asset Monitoring - Available Commands
     ======================================
+
+    Setup:
+      rake install       - Install dependencies via Bundler
 
     Development:
       rake server        - Start the application server on port 8080
