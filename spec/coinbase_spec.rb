@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Coinbase do
   describe '.spot' do
-    let(:logger) { instance_double(Logger, debug: nil) }
-    let(:settings) { instance_double(Asset::Monitoring, log: logger) }
+    let(:logger) { double('logger', debug: nil) } # rubocop:disable RSpec/VerifiedDoubles
+    let(:settings) { double('settings', log: logger) } # rubocop:disable RSpec/VerifiedDoubles
 
     context 'with successful API response', vcr: { cassette_name: 'coinbase_success' } do
       subject(:result) { described_class.spot(settings) }

@@ -48,16 +48,49 @@ RSpec/MultipleExpectations:
 RSpec/NestedGroups:
   Max: 4
 
-# Not a Rails app - disable Rails-specific cops
+RSpec/FilePath:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+# Disable all Capybara cops (not using Capybara)
+Capybara:
+  Enabled: false
+
+Capybara/RSpec:
+  Enabled: false
+
+Capybara/RSpec/PredicateMatcher:
+  Enabled: false
+
+# Disable all FactoryBot cops (not using FactoryBot)
+FactoryBot:
+  Enabled: false
+
+# Disable all RSpecRails cops (not a Rails app)
+RSpecRails:
+  Enabled: false
+
+RSpecRails/AvoidSetupHook:
+  Enabled: false
+
 RSpecRails/HaveHttpStatus:
+  Enabled: false
+  Exclude:
+    - '**/*'
+
+RSpecRails/HttpStatus:
   Enabled: false
 
 RSpecRails/InferredSpecType:
   Enabled: false
 
-# File naming convention doesn't match module structure
-RSpec/FilePath:
+RSpecRails/MinitestAssertions:
   Enabled: false
 
-RSpec/SpecFilePathFormat:
+RSpecRails/NegationBeValid:
+  Enabled: false
+
+RSpecRails/TravelAround:
   Enabled: false

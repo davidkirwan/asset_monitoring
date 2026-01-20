@@ -43,7 +43,8 @@ module Asset
     end
 
     not_found do
-      [404, 'text/plain', '404 not found']
+      content_type 'text/plain'
+      '404 not found'
     end
 
     private

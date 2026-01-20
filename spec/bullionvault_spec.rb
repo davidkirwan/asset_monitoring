@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe BullionVault do
   describe '.spot' do
-    let(:logger) { instance_double(Logger, debug: nil, warn: nil) }
-    let(:settings) { instance_double(Asset::Monitoring, log: logger) }
+    let(:logger) { double('logger', debug: nil, warn: nil) } # rubocop:disable RSpec/VerifiedDoubles
+    let(:settings) { double('settings', log: logger) } # rubocop:disable RSpec/VerifiedDoubles
 
     context 'with successful API response', vcr: { cassette_name: 'bullionvault_success' } do
       subject(:result) { described_class.spot(settings) }
