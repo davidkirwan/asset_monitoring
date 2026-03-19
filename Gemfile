@@ -7,7 +7,7 @@ ruby '3.2.0'
 # Application gems
 gem 'faraday', '~> 2.7'
 gem 'faraday-retry', '~> 2.2'
-gem 'json', '~> 2.6'
+gem 'json', '~> 2.15'
 gem 'nokogiri', '~> 1.15'
 gem 'puma', '~> 6.0'
 gem 'sinatra', '~> 4.0'
