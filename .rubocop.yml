@@ -3,7 +3,7 @@ require:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.4
   Exclude:
     - 'vendor/**/*'
     - 'spec/fixtures/**/*'
@@ -54,43 +54,11 @@ RSpec/FilePath:
 RSpec/SpecFilePathFormat:
   Enabled: false
 
-# Disable all Capybara cops (not using Capybara)
+# Capybara / FactoryBot / RSpec-Rails: not used (Sinatra, no Capybara)
+# Department-level only — avoids namespace mismatch warnings (RSpec/Capybara/* → Capybara/*)
 Capybara:
   Enabled: false
-
-Capybara/RSpec:
-  Enabled: false
-
-Capybara/RSpec/PredicateMatcher:
-  Enabled: false
-
-# Disable all FactoryBot cops (not using FactoryBot)
 FactoryBot:
   Enabled: false
-
-# Disable all RSpecRails cops (not a Rails app)
 RSpecRails:
-  Enabled: false
-
-RSpecRails/AvoidSetupHook:
-  Enabled: false
-
-RSpecRails/HaveHttpStatus:
-  Enabled: false
-  Exclude:
-    - '**/*'
-
-RSpecRails/HttpStatus:
-  Enabled: false
-
-RSpecRails/InferredSpecType:
-  Enabled: false
-
-RSpecRails/MinitestAssertions:
-  Enabled: false
-
-RSpecRails/NegationBeValid:
-  Enabled: false
-
-RSpecRails/TravelAround:
   Enabled: false

@@ -4,22 +4,6 @@ require 'spec_helper'
 require 'rack/test'
 
 RSpec.describe Asset::Monitoring do
-  MINIMAL_BULLIONVAULT_XML = <<~XML
-    <?xml version="1.0"?>
-    <envelope>
-      <message>
-        <market>
-          <pitches>
-            <pitch securityId="AUXZU" considerationCurrency="usd">
-              <buyPrices><price actionIndicator="B" quantity="0.1" limit="200000"/></buyPrices>
-              <sellPrices><price actionIndicator="S" quantity="0.1" limit="201000"/></sellPrices>
-            </pitch>
-          </pitches>
-        </market>
-      </message>
-    </envelope>
-  XML
-
   include Rack::Test::Methods
 
   def app
@@ -70,9 +54,27 @@ RSpec.describe Asset::Monitoring do
     end
 
     context 'when coinbase service fails' do
+      let(:minimal_bullionvault_xml) do
+        <<~XML
+          <?xml version="1.0"?>
+          <envelope>
+            <message>
+              <market>
+                <pitches>
+                  <pitch securityId="AUXZU" considerationCurrency="usd">
+                    <buyPrices><price actionIndicator="B" quantity="0.1" limit="200000"/></buyPrices>
+                    <sellPrices><price actionIndicator="S" quantity="0.1" limit="201000"/></sellPrices>
+                  </pitch>
+                </pitches>
+              </market>
+            </message>
+          </envelope>
+        XML
+      end
+
       it 'returns 500 status when cache is empty' do
         stub_request(:get, 'https://www.bullionvault.com/view_market_xml.do')
-          .to_return(status: 200, body: MINIMAL_BULLIONVAULT_XML, headers: { 'Content-Type' => 'text/xml' })
+          .to_return(status: 200, body: minimal_bullionvault_xml, headers: { 'Content-Type' => 'text/xml' })
         stub_request(:get, 'https://api.coinbase.com/v2/prices/BTC-USD/spot')
           .to_return(status: 500, body: 'Internal Server Error')
 

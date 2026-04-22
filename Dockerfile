@@ -1,11 +1,11 @@
 # Multi-stage build for smaller production image
-FROM ruby:3.2.0-alpine AS builder
+FROM ruby:3.4.8-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache \
     build-base \
     git \
-    && gem install bundler:2.4.22
+    && gem install bundler:2.6.6
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN bundle config set --local deployment 'true' \
     && bundle install --jobs=4 --retry=3
 
 # Production stage
-FROM ruby:3.2.0-alpine AS production
+FROM ruby:3.4.8-alpine AS production
 
 # Install runtime dependencies
 RUN apk add --no-cache \
