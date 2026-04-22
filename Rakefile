@@ -66,10 +66,15 @@ task :default do
       rake docker_build  - Build the Docker image
       rake docker_run    - Run the Docker container
 
-    Endpoints (when server is running):
-      curl http://localhost:8080/metrics  - Prometheus metrics
-      curl http://localhost:8080/health   - Health check
-      curl http://localhost:8080/ready    - Readiness check
+    Web UI (open in a browser, server on 0.0.0.0:8080):
+      /                  - Redirects to /dashboard
+      /dashboard         - 7-day price charts (BullionVault + Coinbase; one point per background scrape)
+
+    API / metrics (curl or similar):
+      /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed)
+      /metrics                - Prometheus text exposition (cached from last successful scrape)
+      /health                 - Liveness JSON probe
+      /ready                  - Readiness JSON probe
 
   HELP
 end
