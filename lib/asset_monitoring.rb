@@ -11,8 +11,8 @@ require_relative 'metrics_cache'
 module Asset
   class Monitoring < Sinatra::Base
     configure do
-      set :root, __dir__
-      set :views, File.join(__dir__, 'views')
+      set :root, File.expand_path('..', __dir__)
+      set :views, File.join(root, 'views')
 
       config = Asset::Config.load
       set :environment, config[:environment]

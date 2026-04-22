@@ -76,7 +76,8 @@ end
 
 desc 'Start an interactive console'
 task :console do
-  require_relative 'asset_monitoring'
+  $LOAD_PATH.unshift File.expand_path('lib', __dir__)
+  require 'asset_monitoring'
   require 'pry'
   Pry.start
 end

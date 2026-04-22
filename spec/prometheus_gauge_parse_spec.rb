@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../prometheus_gauge_parse'
 
 RSpec.describe Asset::PrometheusGaugeParse do
   describe '.parse' do

@@ -2,6 +2,8 @@
 
 ENV['RACK_ENV'] = 'test'
 
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+
 require 'simplecov'
 SimpleCov.start do
   add_filter '/spec/'
@@ -12,7 +14,7 @@ end
 require 'rspec'
 require 'webmock/rspec'
 require 'vcr'
-require_relative '../asset_monitoring'
+require 'asset_monitoring'
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'

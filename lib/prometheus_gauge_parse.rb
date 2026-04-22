@@ -7,6 +7,7 @@ module Asset
 
     module_function
 
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def parse(prometheus_text)
       help = {}
       values = {}
@@ -29,5 +30,6 @@ module Asset
       end
       [values, help]
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
-require File.join(File.dirname(__FILE__), '/asset_monitoring.rb')
+$LOAD_PATH.unshift File.expand_path('lib', __dir__)
+require 'asset_monitoring'
 
 run Asset::Monitoring

@@ -1,4 +1,4 @@
-require:
+plugins:
   - rubocop-rspec
 
 AllCops:
@@ -48,17 +48,5 @@ RSpec/MultipleExpectations:
 RSpec/NestedGroups:
   Max: 4
 
-RSpec/FilePath:
-  Enabled: false
-
 RSpec/SpecFilePathFormat:
-  Enabled: false
-
-# Capybara / FactoryBot / RSpec-Rails: not used (Sinatra, no Capybara)
-# Department-level only — avoids namespace mismatch warnings (RSpec/Capybara/* → Capybara/*)
-Capybara:
-  Enabled: false
-FactoryBot:
-  Enabled: false
-RSpecRails:
   Enabled: false
