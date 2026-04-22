@@ -10,6 +10,7 @@ gem 'faraday-retry', '~> 2.2'
 gem 'json', '~> 2.6'
 gem 'nokogiri', '~> 1.15'
 gem 'puma', '~> 6.0'
+gem 'rackup', '~> 2.2'
 gem 'sinatra', '~> 4.0'
 
 # Development and test gems

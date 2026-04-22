@@ -22,12 +22,12 @@ end
 
 desc 'Start the application server'
 task :server do
-  sh 'bundle exec rackup -p 8080'
+  sh 'bundle exec rackup --host 0.0.0.0 -p 8080'
 end
 
 desc 'Start the application server with auto-reload (development)'
 task :dev do
-  sh 'bundle exec rerun -- rackup -p 8080'
+  sh 'bundle exec rerun -- rackup --host 0.0.0.0 -p 8080'
 end
 
 desc 'Build the Docker image'
@@ -50,7 +50,7 @@ task :default do
       rake install       - Install dependencies via Bundler
 
     Development:
-      rake server        - Start the application server on port 8080
+      rake server        - Start the application server on 0.0.0.0:8080
       rake dev           - Start with auto-reload (requires rerun gem)
       rake console       - Start an interactive console
 

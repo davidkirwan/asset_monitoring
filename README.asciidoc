@@ -1,28 +1,31 @@
-= Asset Monitoring
+= Asset monitoring
 
-A Ruby app that exposes precious metals and cryptocurrency prices as Prometheus metrics.
+Serves **BullionVault** (precious metals) and **Coinbase** (BTC, ETH) spot data as **Prometheus** text at `GET /metrics`. Upstream APIs are queried on a **background schedule**; `/metrics` reads the last successful scrape (default: refresh every 3600s).
 
-== Data Sources
+* `/metrics` – Prometheus
+* `/health` / `/ready` – probes
 
-* *BullionVault* - Gold, Silver, Platinum prices across Zurich, London, New York, Toronto, Singapore
-* *Coinbase* - BTC and ETH prices in USD and EUR
+== Run
 
-== Endpoints
+```
+bundle install
+rake server
+```
 
-* `/metrics` - Prometheus metrics
-* `/health` - Health check
-* `/ready` - Readiness check
+`rake server` and `rake dev` bind **`0.0.0.0:8080`**. `rake dev` uses `rerun` for auto-reload.
 
-== Running Locally
+[cols="1,2",options="header"]
+|===
+|Variable |Purpose
 
-    bundle install
-    bundle exec puma
+|`RACK_ENV` |`production` / `development` (tests force `test` and disable the scraper)
+|`PORT` |Listen port (default `8080`)
+|`LOG_LEVEL` |Default `INFO`
+|`APP_VERSION` |Label on `asset_monitoring_app_info` (default `unknown`)
+|`METRICS_SCRAPE_INTERVAL_SECONDS` |Seconds between background scrapes (default `3600`; `0` = only initial scrape, no loop)
+|`METRICS_SCHEDULER_DISABLED` |`1` – do not start the background scraper
+|===
 
-== Kubernetes/OpenShift
+== Kubernetes
 
-The `kubernetes/` directory contains manifests for deploying with Prometheus monitoring:
-
-* `deployment.yaml` - App deployment
-* `service.yaml` - Service definition
-* `service_monitor.yaml` - Prometheus ServiceMonitor
-* `prometheusrules.yaml` - Alert rules
+Example manifests: `kubernetes/` (deployment, service, `ServiceMonitor`, alert rules).

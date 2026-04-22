@@ -4,6 +4,22 @@ require 'spec_helper'
 require 'rack/test'
 
 RSpec.describe Asset::Monitoring do
+  MINIMAL_BULLIONVAULT_XML = <<~XML
+    <?xml version="1.0"?>
+    <envelope>
+      <message>
+        <market>
+          <pitches>
+            <pitch securityId="AUXZU" considerationCurrency="usd">
+              <buyPrices><price actionIndicator="B" quantity="0.1" limit="200000"/></buyPrices>
+              <sellPrices><price actionIndicator="S" quantity="0.1" limit="201000"/></sellPrices>
+            </pitch>
+          </pitches>
+        </market>
+      </message>
+    </envelope>
+  XML
+
   include Rack::Test::Methods
 
   def app
@@ -11,6 +27,8 @@ RSpec.describe Asset::Monitoring do
   end
 
   describe 'GET /metrics' do
+    before { Asset::MetricsCache.reset! }
+
     context 'when all services are working' do
       around do |example|
         VCR.use_cassette('bullionvault_success') do
@@ -20,7 +38,12 @@ RSpec.describe Asset::Monitoring do
         end
       end
 
+      def refresh_cache
+        Asset::MetricsCache.refresh_silent!(app.settings)
+      end
+
       it 'returns 200 with prometheus format metrics' do
+        refresh_cache
         get '/metrics'
         expect(last_response.status).to eq(200)
         expect(last_response.content_type).to include('text/plain')
@@ -28,6 +51,7 @@ RSpec.describe Asset::Monitoring do
       end
 
       it 'includes bullionvault and coinbase metrics' do
+        refresh_cache
         get '/metrics'
         expect(last_response.body).to include('bullion_gold_', 'bullion_silver_')
         expect(last_response.body).to include('crypto_btc_', 'crypto_eth_')
@@ -35,20 +59,24 @@ RSpec.describe Asset::Monitoring do
     end
 
     context 'when bullionvault service fails' do
-      it 'returns 500 status' do
+      it 'returns 500 status when cache is empty' do
         stub_request(:get, 'https://www.bullionvault.com/view_market_xml.do')
           .to_return(status: 500, body: 'Internal Server Error')
 
+        Asset::MetricsCache.refresh_silent!(app.settings)
         get '/metrics'
         expect(last_response.status).to eq(500)
       end
     end
 
     context 'when coinbase service fails' do
-      it 'returns 500 status' do
+      it 'returns 500 status when cache is empty' do
+        stub_request(:get, 'https://www.bullionvault.com/view_market_xml.do')
+          .to_return(status: 200, body: MINIMAL_BULLIONVAULT_XML, headers: { 'Content-Type' => 'text/xml' })
         stub_request(:get, 'https://api.coinbase.com/v2/prices/BTC-USD/spot')
           .to_return(status: 500, body: 'Internal Server Error')
 
+        Asset::MetricsCache.refresh_silent!(app.settings)
         get '/metrics'
         expect(last_response.status).to eq(500)
       end
