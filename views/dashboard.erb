@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asset Monitoring</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: #0f1419; color: #e6edf3; }
+    header { padding: 1rem 1.25rem; background: #161b22; border-bottom: 1px solid #30363d; }
+    header h1 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    header p { margin: 0.35rem 0 0; font-size: 0.85rem; color: #8b949e; }
+    main { padding: 1rem; max-width: 1400px; margin: 0 auto; }
+    #status { color: #8b949e; font-size: 0.85rem; margin-bottom: 1rem; }
+    #charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 0.75rem;
+    }
+    .card h3 { font-size: 0.75rem; font-weight: 500; color: #8b949e; margin: 0 0 0.5rem; line-height: 1.3; }
+    .card canvas { max-height: 220px; }
+    a { color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Asset Monitoring</h1>
+    <p>One sample per background scrape. <a href="/metrics">Prometheus /metrics</a></p>
+  </header>
+  <main>
+    <p id="status">Loading…</p>
+    <div id="charts"></div>
+  </main>
+  <script>
+  (function () {
+    const status = document.getElementById('status');
+    const host = document.getElementById('charts');
+
+    function buildChart (series) {
+      const labelText = (series.label || series.id);
+      const div = document.createElement('div');
+      div.className = 'card';
+      const h = document.createElement('h3');
+      h.textContent = labelText;
+      div.appendChild(h);
+      const canvas = document.createElement('canvas');
+      div.appendChild(canvas);
+      host.appendChild(div);
+
+      const points = series.points;
+      new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: points.map(function (p) { return new Date(p[0] * 1000).toLocaleString(); }),
+          datasets: [{
+            label: series.id,
+            data: points.map(function (p) { return p[1]; }),
+            borderColor: '#58a6ff',
+            backgroundColor: 'rgba(88, 166, 255, 0.1)',
+            fill: true,
+            tension: 0.2,
+            pointRadius: points.length < 2 ? 4 : 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.5,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#8b949e', maxRotation: 50, minRotation: 0, autoSkip: true, maxTicksLimit: 6 } },
+            y: { ticks: { color: '#8b949e' } }
+          }
+        }
+      });
+    }
+
+    async function go () {
+      try {
+        const res = await fetch('/api/price_history.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        host.innerHTML = '';
+        const withData = (data.series || []).filter(function (s) { return s.points && s.points.length; });
+        status.textContent = 'Scrapes in store: ' + (data.scrape_count || 0) + ' — updated ' + (data.updated_at || '—') +
+          ' — ' + withData.length + ' series with data.';
+
+        if (withData.length === 0) {
+          const p = document.createElement('p');
+          p.textContent = 'No history yet. Wait for a successful background scrape, or run a refresh in dev.';
+          p.style.color = '#8b949e';
+          host.appendChild(p);
+          return;
+        }
+        withData.forEach(buildChart);
+      } catch (e) {
+        status.textContent = 'Error: ' + (e && e.message ? e.message : String(e));
+        status.style.color = '#f85149';
+      }
+    }
+    go();
+  })();
+  </script>
+</body>
+</html>

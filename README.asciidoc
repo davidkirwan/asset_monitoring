@@ -2,6 +2,7 @@
 
 Serves **BullionVault** (precious metals) and **Coinbase** (BTC, ETH) spot data as **Prometheus** text at `GET /metrics`. Upstream APIs are queried on a **background schedule**; `/metrics` reads the last successful scrape (default: refresh every 3600s).
 
+* `/` → `/dashboard` – browser UI with **7-day** in-memory **price charts** (one point per background scrape; same data as `/metrics` parsed to JSON at `GET /api/price_history.json`)
 * `/metrics` – Prometheus
 * `/health` / `/ready` – probes
 

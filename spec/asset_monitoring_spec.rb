@@ -103,6 +103,50 @@ RSpec.describe Asset::Monitoring do
     end
   end
 
+  describe 'GET /' do
+    it 'redirects to /dashboard' do
+      get '/'
+      expect(last_response.status).to eq(302)
+      expect(last_response['Location']).to end_with('/dashboard')
+    end
+  end
+
+  describe 'GET /dashboard' do
+    it 'returns 200 and HTML' do
+      get '/dashboard'
+      expect(last_response.status).to eq(200)
+      expect(last_response.body).to include('Asset Monitoring', 'chart.js')
+    end
+  end
+
+  describe 'GET /api/price_history.json' do
+    before { Asset::MetricsCache.reset! }
+
+    it 'returns JSON with series' do
+      get '/api/price_history.json'
+      expect(last_response.status).to eq(200)
+      data = JSON.parse(last_response.body)
+      expect(data).to include('retention_days' => 7, 'scrape_count' => 0, 'series' => [])
+    end
+
+    context 'with cached scrapes' do
+      around do |example|
+        VCR.use_cassette('bullionvault_success') do
+          VCR.use_cassette('coinbase_success') { example.run }
+        end
+      end
+
+      it 'includes parsed series' do
+        Asset::MetricsCache.refresh_silent!(app.settings)
+        get '/api/price_history.json'
+        data = JSON.parse(last_response.body)
+        expect(data['scrape_count']).to be >= 1
+        ids = data['series'].map { |s| s['id'] }
+        expect(ids.any? { |id| id.include?('crypto_btc') }).to be true
+      end
+    end
+  end
+
   describe 'GET /unknown' do
     it 'returns 404 status' do
       get '/unknown'

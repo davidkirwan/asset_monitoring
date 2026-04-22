@@ -5,10 +5,10 @@ source 'https://rubygems.org'
 ruby '~> 3.4.0'
 
 # Application gems
-gem 'faraday', '~> 2.7'
+gem 'faraday', '2.14.1'
 gem 'faraday-retry', '~> 2.2'
-gem 'json', '~> 2.6'
-gem 'nokogiri', '~> 1.15'
+gem 'json', '2.15.2.1'
+gem 'nokogiri', '1.19.1'
 gem 'puma', '~> 6.0'
 gem 'rack', '3.2.6'
 gem 'rackup', '~> 2.2'
@@ -29,5 +29,6 @@ group :development, :test do
 end
 
 group :development do
-  gem 'rerun', '~> 0.14'
+  # rubygems 0.14.0 still calls `Bundler.with_clean_env` (removed in Bundler 4). Git master has the fix; no new release.
+  gem 'rerun', git: 'https://github.com/alexch/rerun.git', ref: '4fbf9b25df4d03a5c9d2b8376ef89897e4a11b2b'
 end

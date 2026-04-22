@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'price_history'
+
 module Asset
   # Thread-safe store for spot metrics fetched on a background schedule.
   class MetricsCache
@@ -23,6 +25,7 @@ module Asset
       end
 
       def reset!
+        PriceHistory.clear!
         MUTEX.synchronize do
           @bullionvault = nil
           @coinbase = nil
@@ -34,12 +37,14 @@ module Asset
       def refresh_silent!(settings)
         bullion = BullionVault.spot(settings)
         coin = Coinbase.spot(settings)
+        t = Time.now
         MUTEX.synchronize do
           @bullionvault = bullion
           @coinbase = coin
-          @last_scrape_at = Time.now
+          @last_scrape_at = t
           @last_error = nil
         end
+        PriceHistory.record_scrape!(t.to_i, bullion, coin)
       rescue StandardError => e
         MUTEX.synchronize { @last_error = e.message }
         settings.log.error("Metrics background refresh failed: #{e.message}")

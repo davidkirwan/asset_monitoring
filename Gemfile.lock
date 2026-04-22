@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/alexch/rerun.git
+  revision: 4fbf9b25df4d03a5c9d2b8376ef89897e4a11b2b
+  ref: 4fbf9b25df4d03a5c9d2b8376ef89897e4a11b2b
+  specs:
+    rerun (0.14.0)
+      listen (~> 3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -35,7 +43,7 @@ GEM
     ffi (1.17.4-x86_64-linux-musl)
     hashdiff (1.2.1)
     io-console (0.8.2)
-    json (2.19.4)
+    json (2.15.2.1)
     json-schema (6.2.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
@@ -53,21 +61,21 @@ GEM
     net-http (0.9.1)
       uri (>= 0.11.1)
     nio4r (2.7.5)
-    nokogiri (1.19.2-aarch64-linux-gnu)
+    nokogiri (1.19.1-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.2-aarch64-linux-musl)
+    nokogiri (1.19.1-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.2-arm-linux-gnu)
+    nokogiri (1.19.1-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.2-arm-linux-musl)
+    nokogiri (1.19.1-arm-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.2-arm64-darwin)
+    nokogiri (1.19.1-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-darwin)
+    nokogiri (1.19.1-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-linux-gnu)
+    nokogiri (1.19.1-x86_64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-linux-musl)
+    nokogiri (1.19.1-x86_64-linux-musl)
       racc (~> 1.4)
     parallel (1.28.0)
     parser (3.3.11.1)
@@ -101,8 +109,6 @@ GEM
     regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
-    rerun (0.14.0)
-      listen (~> 3.0)
     rexml (3.4.4)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
@@ -174,16 +180,16 @@ PLATFORMS
 DEPENDENCIES
   brakeman
   bundler-audit
-  faraday (~> 2.7)
+  faraday (= 2.14.1)
   faraday-retry (~> 2.2)
-  json (~> 2.6)
-  nokogiri (~> 1.15)
+  json (= 2.15.2.1)
+  nokogiri (= 1.19.1)
   pry (~> 0.14)
   puma (~> 6.0)
   rack (= 3.2.6)
   rack-test (~> 2.1)
   rackup (~> 2.2)
-  rerun (~> 0.14)
+  rerun!
   rspec (~> 3.12)
   rubocop (~> 1.81, < 1.86)
   rubocop-rspec (~> 3.2)
@@ -196,4 +202,4 @@ RUBY VERSION
    ruby 3.4.8p72
 
 BUNDLED WITH
-   2.6.9
+   4.0.10

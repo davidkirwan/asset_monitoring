@@ -5,7 +5,7 @@ FROM ruby:3.4.8-alpine AS builder
 RUN apk add --no-cache \
     build-base \
     git \
-    && gem install bundler:2.6.6
+    && gem install bundler:4.0.10
 
 WORKDIR /app
 

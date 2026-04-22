@@ -11,6 +11,9 @@ require_relative 'metrics_cache'
 module Asset
   class Monitoring < Sinatra::Base
     configure do
+      set :root, __dir__
+      set :views, File.join(__dir__, 'views')
+
       config = Asset::Config.load
       set :environment, config[:environment]
       set :port, config[:port]
@@ -31,6 +34,20 @@ module Asset
     get '/ready' do
       content_type :json
       { status: 'ready', timestamp: Time.now.iso8601 }.to_json
+    end
+
+    get '/' do
+      redirect '/dashboard'
+    end
+
+    get '/dashboard' do
+      content_type 'text/html; charset=utf-8'
+      erb :dashboard
+    end
+
+    get '/api/price_history.json' do
+      content_type 'application/json; charset=utf-8'
+      JSON.generate(Asset::PriceHistory.to_api_hash)
     end
 
     get '/metrics' do
