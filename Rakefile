@@ -68,13 +68,17 @@ task :default do
 
     Web UI (open in a browser, server on 0.0.0.0:8080):
       /                  - Redirects to /dashboard
-      /dashboard         - 7-day price charts (BullionVault + Coinbase; one point per background scrape)
+      /dashboard         - Price charts (BullionVault + Coinbase; one point per background scrape). Retention configurable via PRICE_HISTORY_RETENTION_DAYS.
 
     API / metrics (curl or similar):
-      /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed)
+      /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed). Includes retention_days.
       /metrics                - Prometheus text exposition (cached from last successful scrape)
       /health                 - Liveness JSON probe
       /ready                  - Readiness JSON probe
+
+    Optional SQLite persistence (survives restarts):
+      Set PRICE_HISTORY_DB_PATH and (optionally) PRICE_HISTORY_RETENTION_DAYS.
+      See README.asciidoc for Kubernetes PVC + replica considerations.
 
   HELP
 end

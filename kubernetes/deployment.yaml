@@ -76,9 +76,26 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            # Example: mount a writable volume for SQLite price history persistence.
+            # Because readOnlyRootFilesystem is true, the DB file CANNOT live inside the image.
+            # Recommended for durable history:
+            #   1. Set replicas: 1 (SQLite files are not shared between pods)
+            #   2. Provide a PersistentVolumeClaim (ReadWriteOnce is sufficient)
+            #   3. Set PRICE_HISTORY_DB_PATH=/data/asset_history.db and
+            #      optionally PRICE_HISTORY_RETENTION_DAYS in the container env.
+            #
+            # The /tmp emptyDir below can be used for short-term durability within a pod's
+            # lifetime without a PVC (history survives container restarts but is lost on pod delete).
+            #
+            # - name: data
+            #   mountPath: /data
       volumes:
         - name: tmp
           emptyDir: {}
+        # Example PVC for durable price history (uncomment + create the PVC when enabling persistence):
+        # - name: data
+        #   persistentVolumeClaim:
+        #     claimName: asset-monitoring-history
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

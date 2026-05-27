@@ -20,6 +20,9 @@ module Asset
       set :log, Logger.new($stdout)
       enable :logging
 
+      # Configure optional SQLite-backed price history (no-op when PRICE_HISTORY_DB_PATH is unset)
+      Asset::PriceHistory.configure_from_env!
+
       unless ENV['RACK_ENV'] == 'test' || ENV['METRICS_SCHEDULER_DISABLED'] == '1'
         interval = ENV.fetch('METRICS_SCRAPE_INTERVAL_SECONDS', '3600').to_i
         Asset::MetricsCache.start!(self, interval: interval)

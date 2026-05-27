@@ -5,6 +5,7 @@ FROM ruby:3.4.8-alpine AS builder
 RUN apk add --no-cache \
     build-base \
     git \
+    sqlite-dev \
     && gem install bundler:4.0.10
 
 WORKDIR /app
@@ -24,6 +25,7 @@ FROM ruby:3.4.8-alpine AS production
 RUN apk add --no-cache \
     tzdata \
     ca-certificates \
+    sqlite \
     && addgroup -g 1001 -S appgroup \
     && adduser -u 1001 -S appuser -G appgroup
 

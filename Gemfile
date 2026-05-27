@@ -13,6 +13,7 @@ gem 'puma', '~> 6.0'
 gem 'rack', '3.2.6'
 gem 'rackup', '~> 2.2'
 gem 'sinatra', '~> 4.0'
+gem 'sqlite3', '2.3.1'
 
 # Development and test gems
 group :development, :test do
