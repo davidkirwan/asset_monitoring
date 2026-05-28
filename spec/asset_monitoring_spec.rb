@@ -115,7 +115,7 @@ RSpec.describe Asset::Monitoring do
     it 'returns 200 and HTML' do
       get '/dashboard'
       expect(last_response.status).to eq(200)
-      expect(last_response.body).to include('Asset Monitoring', 'chart.js')
+      expect(last_response.body).to include('Asset Monitoring', 'chart.js', '1 day', '1 month', '1 year')
     end
   end
 

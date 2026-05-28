@@ -26,6 +26,28 @@
     }
     .card h3 { font-size: 0.75rem; font-weight: 500; color: #8b949e; margin: 0 0 0.5rem; line-height: 1.3; }
     .card canvas { max-height: 220px; }
+    .range-buttons {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .range-buttons button {
+      font: inherit;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      border: 1px solid #30363d;
+      background: #21262d;
+      color: #8b949e;
+      cursor: pointer;
+    }
+    .range-buttons button:hover { border-color: #58a6ff; color: #c9d1d9; }
+    .range-buttons button.active {
+      background: #388bfd;
+      border-color: #388bfd;
+      color: #fff;
+    }
     a { color: #58a6ff; }
   </style>
 </head>
@@ -42,55 +64,147 @@
   (function () {
     const status = document.getElementById('status');
     const host = document.getElementById('charts');
+    const SECONDS_PER_DAY = 86400;
+    const DEFAULT_RANGE = 'day';
+    const RANGES = [
+      { id: 'day', label: '1 day', days: 1 },
+      { id: 'month', label: '1 month', days: 31 },
+      { id: 'year', label: '1 year', months: 12 }
+    ];
 
-    function buildChart (series) {
-      const labelText = (series.label || series.id);
+    function monthKey(epochSeconds) {
+      const d = new Date(epochSeconds * 1000);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    function filterPoints(points, rangeId, nowSeconds) {
+      if (!points || !points.length) return [];
+
+      if (rangeId === 'year') {
+        const buckets = new Map();
+        points.forEach(function (p) {
+          const key = monthKey(p[0]);
+          const existing = buckets.get(key);
+          if (!existing || p[0] > existing[0]) buckets.set(key, p);
+        });
+        return Array.from(buckets.values())
+          .sort(function (a, b) { return a[0] - b[0]; })
+          .slice(-12);
+      }
+
+      const range = RANGES.find(function (r) { return r.id === rangeId; });
+      const cutoff = nowSeconds - (range.days * SECONDS_PER_DAY);
+      return points.filter(function (p) { return p[0] >= cutoff; });
+    }
+
+    function formatLabel(epochSeconds, rangeId) {
+      const d = new Date(epochSeconds * 1000);
+      if (rangeId === 'day') {
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      if (rangeId === 'year') {
+        return d.toLocaleDateString([], { month: 'short', year: 'numeric' });
+      }
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    function chartOptions(rangeId) {
+      return {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 1.5,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: {
+              color: '#8b949e',
+              maxRotation: 50,
+              minRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: rangeId === 'year' ? 12 : 8
+            }
+          },
+          y: { ticks: { color: '#8b949e' } }
+        }
+      };
+    }
+
+    function updateChart(chart, points, rangeId) {
+      chart.data.labels = points.map(function (p) { return formatLabel(p[0], rangeId); });
+      chart.data.datasets[0].data = points.map(function (p) { return p[1]; });
+      chart.data.datasets[0].pointRadius = points.length < 2 ? 4 : (rangeId === 'year' ? 3 : 1);
+      chart.options = chartOptions(rangeId);
+      chart.update();
+    }
+
+    function buildChart(series, nowSeconds) {
+      const fullPoints = (series.points || []).slice().sort(function (a, b) { return a[0] - b[0]; });
+      const labelText = series.label || series.id;
       const div = document.createElement('div');
       div.className = 'card';
+
       const h = document.createElement('h3');
       h.textContent = labelText;
       div.appendChild(h);
+
       const canvas = document.createElement('canvas');
       div.appendChild(canvas);
+
+      const btnRow = document.createElement('div');
+      btnRow.className = 'range-buttons';
+      div.appendChild(btnRow);
+
       host.appendChild(div);
 
-      const points = series.points;
-      new Chart(canvas.getContext('2d'), {
+      let activeRange = DEFAULT_RANGE;
+      const initialPoints = filterPoints(fullPoints, activeRange, nowSeconds);
+
+      const chart = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
-          labels: points.map(function (p) { return new Date(p[0] * 1000).toLocaleString(); }),
+          labels: initialPoints.map(function (p) { return formatLabel(p[0], activeRange); }),
           datasets: [{
             label: series.id,
-            data: points.map(function (p) { return p[1]; }),
+            data: initialPoints.map(function (p) { return p[1]; }),
             borderColor: '#58a6ff',
             backgroundColor: 'rgba(88, 166, 255, 0.1)',
             fill: true,
             tension: 0.2,
-            pointRadius: points.length < 2 ? 4 : 1
+            pointRadius: initialPoints.length < 2 ? 4 : 1
           }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 1.5,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#8b949e', maxRotation: 50, minRotation: 0, autoSkip: true, maxTicksLimit: 6 } },
-            y: { ticks: { color: '#8b949e' } }
-          }
-        }
+        options: chartOptions(activeRange)
+      });
+
+      RANGES.forEach(function (range) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = range.label;
+        btn.dataset.range = range.id;
+        if (range.id === activeRange) btn.classList.add('active');
+
+        btn.addEventListener('click', function () {
+          activeRange = range.id;
+          btnRow.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          updateChart(chart, filterPoints(fullPoints, activeRange, nowSeconds), activeRange);
+        });
+
+        btnRow.appendChild(btn);
       });
     }
 
-    async function go () {
+    async function go() {
       try {
         const res = await fetch('/api/price_history.json', { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
+        const nowSeconds = Math.floor(Date.now() / 1000);
+
         host.innerHTML = '';
         const withData = (data.series || []).filter(function (s) { return s.points && s.points.length; });
         status.textContent = 'Scrapes in store: ' + (data.scrape_count || 0) + ' — updated ' + (data.updated_at || '—') +
-          ' — ' + withData.length + ' series with data.';
+          ' — ' + withData.length + ' series with data. Default view: last 24 hours.';
 
         if (withData.length === 0) {
           const p = document.createElement('p');
@@ -99,12 +213,14 @@
           host.appendChild(p);
           return;
         }
-        withData.forEach(buildChart);
+
+        withData.forEach(function (series) { buildChart(series, nowSeconds); });
       } catch (e) {
         status.textContent = 'Error: ' + (e && e.message ? e.message : String(e));
         status.style.color = '#f85149';
       }
     }
+
     go();
   })();
   </script>
