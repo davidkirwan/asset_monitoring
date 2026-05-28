@@ -1,61 +1,60 @@
 = Asset monitoring
 
-Serves **BullionVault** (precious metals) and **Coinbase** (BTC, ETH) spot data as **Prometheus** text at `GET /metrics`. Upstream APIs are queried on a **background schedule**; `/metrics` reads the last successful scrape (default: refresh every 3600s).
+Scrapes **BullionVault** (gold, silver) and **Coinbase** (BTC, ETH) on a background schedule (default every 3600s). Serves Prometheus metrics, a portfolio tracker, and price charts.
 
-* `/` → `/dashboard` – browser UI with **price charts** (BullionVault + Coinbase). One point per background scrape. Retention is configurable (`PRICE_HISTORY_RETENTION_DAYS`, default 7). Data is in-memory by default and can be made durable via SQLite.
-* `/metrics` – Prometheus
-* `/health` / `/ready` – probes
+* `/` → `/portfolio` — holdings (gold, silver, BTC, ETH, stocks, cash, property), live estimates, multi-currency history charts
+* `/dashboard` — spot price charts (one point per scrape)
+* `/metrics` — Prometheus text (last successful scrape)
+* `/health`, `/ready` — probes
 
-== Run
+== Run locally
 
 ```
 bundle install
 rake server
 ```
 
-`rake server` and `rake dev` bind **`0.0.0.0:8080`**. `rake dev` uses `rerun` for auto-reload.
+Open http://localhost:8080. `rake dev` adds auto-reload. `rake help` lists all tasks.
+
+== Run with Podman
+
+```
+rake podman:build
+rake podman:run
+```
+
+Binds `./data` → `/data` with SQLite for price and portfolio history (365-day retention by default). Override with `DATA_DIR`, `PRICE_HISTORY_RETENTION_DAYS`, `PRICE_HISTORY_DB_PATH`, `PORTFOLIO_DB_PATH`.
+
+== API
+
+| Path | Purpose
+| `/api/portfolio.json` | GET / PUT / POST portfolio holdings
+| `/api/portfolio_history.json` | Portfolio values over time (EUR, USD, GBP, JPY)
+| `/api/spot_prices.json` | Latest spot prices for valuation
+| `/api/price_history.json` | Dashboard time series
+
+Portfolio snapshots are recorded on save and after each successful scrape. Stocks, cash, and property use FX cross-rates from gold/silver spot quotes.
+
+== Configuration
 
 [cols="1,2",options="header"]
 |===
 |Variable |Purpose
 
-|`RACK_ENV` |`production` / `development` (tests force `test` and disable the scraper)
 |`PORT` |Listen port (default `8080`)
-|`LOG_LEVEL` |Default `INFO`
-|`APP_VERSION` |Label on `asset_monitoring_app_info` (default `unknown`)
-|`METRICS_SCRAPE_INTERVAL_SECONDS` |Seconds between background scrapes (default `3600`; `0` = only initial scrape, no loop)
-|`METRICS_SCHEDULER_DISABLED` |`1` – do not start the background scraper
-|`PRICE_HISTORY_DB_PATH` |Absolute path to SQLite database file for durable price history (e.g. `/data/asset_history.db`). When set, history survives restarts. Requires a writable volume in containerized deployments.
-|`PRICE_HISTORY_RETENTION_DAYS` |Number of days of history to retain (default `7`). Applies to both the in-memory cache and the SQLite store.
+|`METRICS_SCRAPE_INTERVAL_SECONDS` |Scrape interval (default `3600`; `0` = initial scrape only)
+|`METRICS_SCHEDULER_DISABLED` |`1` disables the background scraper
+|`PRICE_HISTORY_DB_PATH` |SQLite path for spot price history (omit for in-memory only)
+|`PORTFOLIO_DB_PATH` |SQLite path for holdings and portfolio history
+|`PRICE_HISTORY_RETENTION_DAYS` |History retention in days (default `7`; `rake podman:run` uses `365`)
+|`RACK_ENV` |`production` / `development` / `test`
 |===
 
 == Kubernetes
 
-Example manifests: `kubernetes/` (deployment, service, `ServiceMonitor`, alert rules).
+Example manifests in `kubernetes/`. When using SQLite persistence:
 
-== Price History Persistence (SQLite)
+* Mount a writable volume at the DB directory (`readOnlyRootFilesystem` needs this)
+* Use `replicas: 1` for a single shared history file, or accept per-pod SQLite
 
-By default the application keeps price history **in memory only** (last N scrapes according to `PRICE_HISTORY_RETENTION_DAYS`). History is lost when the process or pod restarts.
-
-To make history durable across restarts, set `PRICE_HISTORY_DB_PATH` to a writable location for a SQLite database file:
-
-```
-PRICE_HISTORY_DB_PATH=/data/asset_history.db
-# Optional: keep more (or less) history
-PRICE_HISTORY_RETENTION_DAYS=30
-```
-
-The same parsed gauge values that feed `/metrics` and the dashboard are written to the database on every successful background scrape.
-
-=== Important Operational Notes
-
-* **Container filesystems are read-only** — the example Deployment sets `readOnlyRootFilesystem: true`. You **must** mount a writable volume (emptyDir or PersistentVolumeClaim) at the directory containing your `PRICE_HISTORY_DB_PATH`.
-* **Multiple replicas** — each pod maintains its own independent SQLite file. If you want a single consistent view of history in the dashboard, run with `replicas: 1` when persistence is enabled, or accept per-pod history.
-* **Using the existing /tmp volume** — for ephemeral durability within a single pod lifetime (history survives container crashes/restarts but is lost when the pod is deleted), you can point `PRICE_HISTORY_DB_PATH` at a path under the existing `emptyDir` mounted at `/tmp`. This requires no extra PVC.
-* **Production persistence** — create a small PersistentVolumeClaim (ReadWriteOnce is fine), mount it (e.g. at `/data`), and set the DB path inside that directory. Scale the Deployment to 1 replica.
-
-Example volume configuration is included (commented) in `kubernetes/deployment.yaml`.
-
-The `/api/price_history.json` response now includes the effective `retention_days` instead of a hardcoded 7.
-
-No changes are required to Prometheus scraping or alerting rules.
+See commented volume examples in `kubernetes/deployment.yaml`.
