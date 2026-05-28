@@ -39,5 +39,5 @@ Thumbs.db
 /.bundle/
 /vendor/bundle/
 
-# Docker
-.dockerignore
+# Podman
+.containerignore

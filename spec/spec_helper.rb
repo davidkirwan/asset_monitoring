@@ -4,11 +4,13 @@ ENV['RACK_ENV'] = 'test'
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
-require 'simplecov'
-SimpleCov.start do
-  add_filter '/spec/'
-  add_filter '/vendor/'
-  minimum_coverage 80
+if ENV['COVERAGE'] == 'true' || ENV['CI']
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter '/spec/'
+    add_filter '/vendor/'
+    minimum_coverage 80
+  end
 end
 
 require 'rspec'

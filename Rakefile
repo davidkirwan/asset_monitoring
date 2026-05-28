@@ -5,17 +5,51 @@ require 'bundler/setup'
 require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
+APP_HOST = ENV.fetch('HOST', '0.0.0.0')
+APP_PORT = ENV.fetch('PORT', '8080')
+CONTAINERFILE = 'Containerfile'
+IMAGE = 'asset-monitoring:latest'
+RACKUP_CMD = "bundle exec rackup config.ru --host #{APP_HOST} -p #{APP_PORT}"
+
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:rubocop)
+
+desc 'Run RSpec tests'
+task test: :spec
+
+desc 'Run RuboCop linter'
+task lint: :rubocop
 
 desc 'Run all checks (rubocop + specs)'
 task check: %i[rubocop spec]
 
-desc 'Run tests with coverage'
+desc 'Run tests with coverage report'
 task :coverage do
   ENV['COVERAGE'] = 'true'
+  Rake::Task['spec'].reenable
   Rake::Task['spec'].invoke
 end
+
+namespace :security do
+  desc 'Run Bundler audit'
+  task :audit do
+    sh 'bundle exec bundle-audit check --update'
+  end
+
+  desc 'Run Brakeman'
+  task :brakeman do
+    sh 'bundle exec brakeman --no-pager'
+  end
+end
+
+desc 'Run security checks (bundle-audit + brakeman)'
+task security: %w[security:audit security:brakeman]
+
+desc 'Run Bundler audit'
+task audit: 'security:audit'
+
+desc 'Run Brakeman'
+task brakeman: 'security:brakeman'
 
 desc 'Install dependencies'
 task :install do
@@ -24,69 +58,41 @@ end
 
 desc 'Start the application server'
 task :server do
-  sh 'bundle exec rackup --host 0.0.0.0 -p 8080'
+  sh RACKUP_CMD
 end
 
 desc 'Start the application server with auto-reload (development)'
 task :dev do
-  sh 'bundle exec rerun -- rackup --host 0.0.0.0 -p 8080'
-end
-
-desc 'Build the Docker image'
-task :docker_build do
-  sh 'docker build -t asset-monitoring:latest .'
-end
-
-desc 'Run the Docker container'
-task :docker_run do
-  sh 'docker run -p 8080:8080 asset-monitoring:latest'
-end
-
-desc 'Display available commands'
-task :default do
-  puts <<~HELP
-    Asset Monitoring - Available Commands
-    ======================================
-
-    Setup:
-      rake install       - Install dependencies via Bundler
-
-    Development:
-      rake server        - Start the application server on 0.0.0.0:8080
-      rake dev           - Start with auto-reload (requires rerun gem)
-      rake console       - Start an interactive console
-
-    Testing:
-      rake spec          - Run RSpec tests
-      rake rubocop       - Run RuboCop linter
-      rake check         - Run all checks (rubocop + specs)
-      rake coverage      - Run tests with coverage report
-
-    Docker:
-      rake docker_build  - Build the Docker image
-      rake docker_run    - Run the Docker container
-
-    Web UI (open in a browser, server on 0.0.0.0:8080):
-      /                  - Redirects to /dashboard
-      /dashboard         - Price charts (BullionVault + Coinbase; one point per background scrape). Retention configurable via PRICE_HISTORY_RETENTION_DAYS.
-
-    API / metrics (curl or similar):
-      /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed). Includes retention_days.
-      /metrics                - Prometheus text exposition (cached from last successful scrape)
-      /health                 - Liveness JSON probe
-      /ready                  - Readiness JSON probe
-
-    Optional SQLite persistence (survives restarts):
-      Set PRICE_HISTORY_DB_PATH and (optionally) PRICE_HISTORY_RETENTION_DAYS.
-      See README.asciidoc for Kubernetes PVC + replica considerations.
-
-  HELP
+  sh "bundle exec rerun -- #{RACKUP_CMD}"
 end
 
 desc 'Start an interactive console'
 task :console do
-  $LOAD_PATH.unshift File.expand_path('lib', __dir__)
-  require 'asset_monitoring'
-  require 'pry'
-  Pry.start
+  ENV['METRICS_SCHEDULER_DISABLED'] = '1'
+  sh 'bundle exec pry -Ilib -r asset_monitoring'
 end
+
+namespace :podman do
+  desc 'Build the container image'
+  task :build do
+    sh "podman build -t #{IMAGE} -f #{CONTAINERFILE} ."
+  end
+
+  desc 'Run the container'
+  task :run do
+    sh "podman run -p #{APP_PORT}:#{APP_PORT} #{IMAGE}"
+  end
+end
+
+desc 'Build the container image (alias for podman:build)'
+task podman_build: 'podman:build'
+
+desc 'Run the container (alias for podman:run)'
+task podman_run: 'podman:run'
+
+desc 'Display available commands'
+task :help do
+  puts File.read(File.expand_path('tasks/help.txt', __dir__))
+end
+
+task default: :help

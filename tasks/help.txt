@@ -1,0 +1,44 @@
+Asset Monitoring - Available Commands
+======================================
+
+Setup:
+  rake install / make install       - Install dependencies via Bundler
+
+Development:
+  rake server / make server         - Start the application server (default 0.0.0.0:8080)
+  rake dev / make dev               - Start with auto-reload (requires rerun gem)
+  rake console / make console       - Start an interactive Pry console
+
+Testing:
+  rake spec / make spec             - Run RSpec tests
+  rake test / make test             - Alias for spec
+  rake rubocop / make rubocop       - Run RuboCop linter
+  rake lint / make lint             - Alias for rubocop
+  rake check / make check           - Run all checks (rubocop + specs)
+  rake coverage / make coverage     - Run tests with coverage report
+
+Security:
+  rake security / make security     - Run bundle-audit and brakeman
+  rake audit / make audit           - Run bundle-audit only
+  rake brakeman / make brakeman     - Run brakeman only
+
+Podman:
+  rake podman:build / make podman-build   - Build the container image
+  rake podman:run / make podman-run       - Run the container
+
+Environment overrides (server/dev):
+  HOST=0.0.0.0 PORT=8080            - Bind address and port (defaults shown)
+
+Web UI (open in a browser, server on 0.0.0.0:8080):
+  /                  - Redirects to /dashboard
+  /dashboard         - Price charts (BullionVault + Coinbase; one point per background scrape). Retention configurable via PRICE_HISTORY_RETENTION_DAYS.
+
+API / metrics (curl or similar):
+  /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed). Includes retention_days.
+  /metrics                - Prometheus text exposition (cached from last successful scrape)
+  /health                 - Liveness JSON probe
+  /ready                  - Readiness JSON probe
+
+Optional SQLite persistence (survives restarts):
+  Set PRICE_HISTORY_DB_PATH and (optionally) PRICE_HISTORY_RETENTION_DAYS.
+  See README.asciidoc for Kubernetes PVC + replica considerations.
