@@ -41,3 +41,7 @@ Thumbs.db
 
 # Podman
 .containerignore
+
+# Local SQLite price history (see data/.gitkeep)
+/data/*
+!/data/.gitkeep

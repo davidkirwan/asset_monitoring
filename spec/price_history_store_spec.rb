@@ -82,6 +82,20 @@ RSpec.describe Asset::PriceHistoryStore do
       File.unlink(temp_db) if File.exist?(temp_db)
     end
 
+    it 'creates the database file on disk during initialization' do
+      dir = Dir.mktmpdir
+      db_path = File.join(dir, 'asset_history.db')
+      expect(File.exist?(db_path)).to be false
+
+      store = described_class.new(db_path, retention_days: 30, log: log)
+
+      expect(store.enabled?).to be true
+      expect(File.exist?(db_path)).to be true
+      expect(File.size(db_path)).to be > 0
+    ensure
+      FileUtils.remove_entry(dir) if defined?(dir) && dir && Dir.exist?(dir)
+    end
+
     it 'persists across separate store instances (simulating restart)' do
       now = Time.now.to_i
       store1 = described_class.new(temp_db, retention_days: 30, log: log)

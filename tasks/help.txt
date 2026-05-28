@@ -24,7 +24,15 @@ Security:
 
 Podman:
   rake podman:build / make podman-build   - Build the container image
-  rake podman:run / make podman-run       - Run the container
+  rake podman:run / make podman-run       - Run the container (365-day retention, SQLite in ./data)
+
+  podman:run defaults (override via env):
+    PRICE_HISTORY_RETENTION_DAYS=365      - Retain price history for one year
+    PRICE_HISTORY_DB_PATH=/data/asset_history.db  - Path inside the container
+    DATA_DIR=./data                       - Host directory bind-mounted to /data
+
+  The SQLite file appears in ./data/asset_history.db after a successful start.
+  Check container logs for "SQLite price history enabled" or permission errors.
 
 Environment overrides (server/dev):
   HOST=0.0.0.0 PORT=8080            - Bind address and port (defaults shown)

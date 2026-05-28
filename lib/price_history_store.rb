@@ -21,8 +21,9 @@ module Asset
       ensure_directory
       open_database
       ensure_schema
+      log_info("Opened SQLite store at #{@db_path}")
     rescue StandardError => e
-      log_error("Failed to initialize SQLite store at #{@db_path}: #{e.message}")
+      log_error("Failed to initialize SQLite store at #{@db_path}: #{e.class}: #{e.message}")
       close_database
       @db = nil
     end
@@ -125,6 +126,11 @@ module Asset
       @db.busy_timeout = 5_000
       @db.execute('PRAGMA foreign_keys = ON')
       @db.execute('PRAGMA journal_mode = DELETE') # simple and safe default
+
+      return if @db_path == ':memory:'
+      return if File.file?(@db_path)
+
+      raise Errno::ENOENT, "SQLite database file was not created at #{@db_path}"
     end
 
     def ensure_schema
@@ -168,6 +174,14 @@ module Asset
     def log_error(message)
       if @log.respond_to?(:error)
         @log.error(message)
+      else
+        warn "[PriceHistoryStore] #{message}"
+      end
+    end
+
+    def log_info(message)
+      if @log.respond_to?(:info)
+        @log.info(message)
       else
         warn "[PriceHistoryStore] #{message}"
       end

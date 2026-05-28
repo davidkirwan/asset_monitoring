@@ -27,22 +27,16 @@ module Asset
         end
 
         log = resolve_logger
-        @store = PriceHistoryStore.new(db_path, retention_days: @retention_days, log: log)
-        hydrate_from_store! if @store&.enabled?
-      end
+        store = PriceHistoryStore.new(db_path, retention_days: @retention_days, log: log)
+        unless store.enabled?
+          log_warn("SQLite price history disabled; could not open #{db_path} (check directory permissions)")
+          @store = nil
+          return
+        end
 
-      private_class_method def resolve_retention_days
-        val = ENV.fetch('PRICE_HISTORY_RETENTION_DAYS', DEFAULT_RETENTION_DAYS.to_s).to_i
-        val.positive? ? val : DEFAULT_RETENTION_DAYS
-      end
-
-      private_class_method def resolve_logger
-        return nil unless defined?(Asset::Monitoring)
-
-        settings = Asset::Monitoring.settings
-        return nil unless settings.respond_to?(:log)
-
-        settings.log
+        @store = store
+        log_info("SQLite price history enabled at #{db_path} (retention: #{@retention_days} days)")
+        hydrate_from_store!
       end
 
       attr_reader :retention_days
@@ -94,6 +88,38 @@ module Asset
       end
 
       private
+
+      def resolve_retention_days
+        val = ENV.fetch('PRICE_HISTORY_RETENTION_DAYS', DEFAULT_RETENTION_DAYS.to_s).to_i
+        val.positive? ? val : DEFAULT_RETENTION_DAYS
+      end
+
+      def resolve_logger
+        return nil unless defined?(Asset::Monitoring)
+
+        settings = Asset::Monitoring.settings
+        return nil unless settings.respond_to?(:log)
+
+        settings.log
+      end
+
+      def log_info(message)
+        logger = resolve_logger
+        if logger.respond_to?(:info)
+          logger.info(message)
+        else
+          warn "[PriceHistory] #{message}"
+        end
+      end
+
+      def log_warn(message)
+        logger = resolve_logger
+        if logger.respond_to?(:warn)
+          logger.warn(message)
+        else
+          warn "[PriceHistory] #{message}"
+        end
+      end
 
       def retention_seconds
         @retention_days * 24 * 60 * 60
