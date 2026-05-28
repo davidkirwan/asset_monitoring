@@ -7,12 +7,15 @@ require_relative 'config/application'
 require_relative 'bullionvault/bullionvault_spot'
 require_relative 'coinbase/coinbase_spot'
 require_relative 'metrics_cache'
+require_relative 'spot_prices'
+require_relative 'portfolio'
 
 module Asset
   class Monitoring < Sinatra::Base
     configure do
       set :root, File.expand_path('..', __dir__)
       set :views, File.join(root, 'views')
+      set :public_folder, File.join(root, 'public')
 
       config = Asset::Config.load
       set :environment, config[:environment]
@@ -22,6 +25,7 @@ module Asset
 
       # Configure optional SQLite-backed price history (no-op when PRICE_HISTORY_DB_PATH is unset)
       Asset::PriceHistory.configure_from_env!
+      Asset::Portfolio.configure_from_env!(root: settings.root)
 
       unless ENV['RACK_ENV'] == 'test' || ENV['METRICS_SCHEDULER_DISABLED'] == '1'
         interval = ENV.fetch('METRICS_SCRAPE_INTERVAL_SECONDS', '3600').to_i
@@ -40,12 +44,60 @@ module Asset
     end
 
     get '/' do
-      redirect '/dashboard'
+      redirect '/portfolio'
+    end
+
+    get '/portfolio' do
+      @active_tab = 'portfolio'
+      @page_title = 'Portfolio — Asset Monitoring'
+      @page_subtitle = 'Track holdings in your preferred units.'
+      @extra_head = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>'
+      erb :portfolio, layout: :layout
     end
 
     get '/dashboard' do
-      content_type 'text/html; charset=utf-8'
-      erb :dashboard
+      @active_tab = 'dashboard'
+      @page_title = 'Dashboard — Asset Monitoring'
+      @page_subtitle = 'One sample per background scrape.'
+      @extra_head = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>'
+      erb :dashboard, layout: :layout
+    end
+
+    get '/api/spot_prices.json' do
+      content_type 'application/json; charset=utf-8'
+      JSON.generate(Asset::SpotPrices.to_api_hash)
+    end
+
+    get '/api/portfolio.json' do
+      content_type 'application/json; charset=utf-8'
+      JSON.generate(Asset::Portfolio.to_api_hash)
+    end
+
+    put '/api/portfolio.json' do
+      content_type 'application/json; charset=utf-8'
+      payload = JSON.parse(request.body.read)
+      result = Asset::Portfolio.save!(payload)
+      status result['ok'] ? 200 : 503
+      JSON.generate(result)
+    rescue JSON::ParserError
+      status 400
+      JSON.generate('ok' => false, 'error' => 'Invalid JSON body')
+    end
+
+    post '/api/portfolio.json' do
+      content_type 'application/json; charset=utf-8'
+      payload = JSON.parse(request.body.read)
+      result = Asset::Portfolio.save!(payload)
+      status result['ok'] ? 200 : 503
+      JSON.generate(result)
+    rescue JSON::ParserError
+      status 400
+      JSON.generate('ok' => false, 'error' => 'Invalid JSON body')
+    end
+
+    get '/api/portfolio_history.json' do
+      content_type 'application/json; charset=utf-8'
+      JSON.generate(Asset::Portfolio.history_api_hash)
     end
 
     get '/api/price_history.json' do

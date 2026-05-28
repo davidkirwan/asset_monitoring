@@ -12,6 +12,7 @@ IMAGE ?= asset-monitoring:latest
 DATA_DIR ?= $(CURDIR)/data
 CONTAINER_DATA_DIR ?= /data
 PRICE_HISTORY_DB_PATH ?= $(CONTAINER_DATA_DIR)/asset_history.db
+PORTFOLIO_DB_PATH ?= $(CONTAINER_DATA_DIR)/portfolio.db
 PRICE_HISTORY_RETENTION_DAYS ?= 365
 BUNDLE ?= bundle
 BUNDLE_EXEC ?= $(BUNDLE) exec
@@ -73,6 +74,7 @@ podman-run: ## Run the container (SQLite in ./data bind-mounted to /data)
 	podman run --rm -p $(APP_PORT):$(APP_PORT) \
 	  -e PRICE_HISTORY_RETENTION_DAYS=$(PRICE_HISTORY_RETENTION_DAYS) \
 	  -e PRICE_HISTORY_DB_PATH=$(PRICE_HISTORY_DB_PATH) \
+	  -e PORTFOLIO_DB_PATH=$(PORTFOLIO_DB_PATH) \
 	  -v $(DATA_DIR):$(CONTAINER_DATA_DIR):Z,U \
 	  $(IMAGE)
 

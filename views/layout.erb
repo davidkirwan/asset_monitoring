@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= @page_title || 'Asset Monitoring' %></title>
+  <link rel="stylesheet" href="/css/app.css" />
+  <%= @extra_head if defined?(@extra_head) && @extra_head %>
+</head>
+<body>
+  <header>
+    <h1>Asset Monitoring</h1>
+    <p><%= @page_subtitle || 'Track holdings and spot prices.' %> <a href="/metrics">Prometheus /metrics</a></p>
+  </header>
+  <%= erb :_nav %>
+  <main>
+    <%= yield %>
+  </main>
+  <%= @extra_scripts if defined?(@extra_scripts) && @extra_scripts %>
+</body>
+</html>

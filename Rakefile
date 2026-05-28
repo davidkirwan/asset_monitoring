@@ -100,6 +100,7 @@ namespace :podman do
   task :run do
     retention_days = ENV.fetch('PRICE_HISTORY_RETENTION_DAYS', '365')
     db_path = ENV.fetch('PRICE_HISTORY_DB_PATH', PRICE_HISTORY_DB_PATH)
+    portfolio_db_path = ENV.fetch('PORTFOLIO_DB_PATH', File.join(File.dirname(db_path), 'portfolio.db'))
     container_data_dir = File.dirname(db_path)
 
     FileUtils.mkdir_p(DATA_DIR)
@@ -108,6 +109,7 @@ namespace :podman do
        '-p', "#{APP_PORT}:#{APP_PORT}",
        '-e', "PRICE_HISTORY_RETENTION_DAYS=#{retention_days}",
        '-e', "PRICE_HISTORY_DB_PATH=#{db_path}",
+       '-e', "PORTFOLIO_DB_PATH=#{portfolio_db_path}",
        '-v', "#{DATA_DIR}:#{container_data_dir}:Z,U",
        IMAGE
   end

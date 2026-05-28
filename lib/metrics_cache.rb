@@ -45,6 +45,7 @@ module Asset
           @last_error = nil
         end
         PriceHistory.record_scrape!(t.to_i, bullion, coin)
+        record_portfolio_snapshot!(t.to_i)
       rescue StandardError => e
         MUTEX.synchronize { @last_error = e.message }
         settings.log.error("Metrics background refresh failed: #{e.message}")
@@ -62,6 +63,13 @@ module Asset
           end
         end
       end
+
+      def record_portfolio_snapshot!(epoch)
+        return unless defined?(Asset::Portfolio) && Asset::Portfolio.enabled?
+
+        Asset::Portfolio.record_snapshot!(epoch)
+      end
+      private :record_portfolio_snapshot!
     end
   end
 end

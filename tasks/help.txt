@@ -29,20 +29,26 @@ Podman:
   podman:run defaults (override via env):
     PRICE_HISTORY_RETENTION_DAYS=365      - Retain price history for one year
     PRICE_HISTORY_DB_PATH=/data/asset_history.db  - Path inside the container
+    PORTFOLIO_DB_PATH=/data/portfolio.db          - Portfolio holdings + history (defaults to same dir as price history)
     DATA_DIR=./data                       - Host directory bind-mounted to /data
 
-  The SQLite file appears in ./data/asset_history.db after a successful start.
+  The SQLite files appear in ./data/ after a successful start
+  (asset_history.db for spot prices, portfolio.db for holdings and portfolio history).
   Check container logs for "SQLite price history enabled" or permission errors.
 
 Environment overrides (server/dev):
   HOST=0.0.0.0 PORT=8080            - Bind address and port (defaults shown)
 
 Web UI (open in a browser, server on 0.0.0.0:8080):
-  /                  - Redirects to /dashboard
-  /dashboard         - Price charts (BullionVault + Coinbase; one point per background scrape). Retention configurable via PRICE_HISTORY_RETENTION_DAYS.
+  /                  - Redirects to /portfolio
+  /portfolio         - Track holdings (gold, silver, BTC, ETH, stocks, cash, property) with history charts
+  /dashboard         - Price charts (BullionVault + Coinbase; one point per background scrape)
 
 API / metrics (curl or similar):
-  /api/price_history.json - JSON time series for the dashboard (same underlying data as /metrics, parsed). Includes retention_days.
+  /api/price_history.json    - JSON time series for the dashboard (same underlying data as /metrics, parsed). Includes retention_days.
+  /api/portfolio_history.json - Per-asset and total portfolio values in EUR/USD/GBP/JPY over time (snapshots on save and scrape)
+  /api/spot_prices.json      - Latest spot prices for portfolio valuation
+  /api/portfolio.json        - Load (GET) and save (PUT/POST) portfolio holdings
   /metrics                - Prometheus text exposition (cached from last successful scrape)
   /health                 - Liveness JSON probe
   /ready                  - Readiness JSON probe

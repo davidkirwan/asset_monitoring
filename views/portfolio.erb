@@ -1,0 +1,38 @@
+<section class="portfolio-toolbar card">
+  <label>
+    Summary currency
+    <select id="summary-currency" aria-label="Summary currency">
+      <option value="EUR">EUR</option>
+      <option value="USD">USD</option>
+      <option value="GBP">GBP</option>
+      <option value="JPY">JPY</option>
+    </select>
+  </label>
+  <div class="portfolio-actions">
+    <button id="portfolio-save" type="button">Save portfolio</button>
+    <span id="portfolio-save-status" class="muted">Loading…</span>
+  </div>
+  <p id="portfolio-status" class="muted" style="margin:0;">Loading spot prices…</p>
+</section>
+
+<section id="portfolio-grid" class="portfolio-grid" aria-label="Portfolio holdings"></section>
+
+<section id="portfolio-summary" class="card portfolio-summary" aria-live="polite">
+  <h2>Estimated totals</h2>
+  <dl id="portfolio-totals"></dl>
+</section>
+
+<section id="portfolio-history" class="card portfolio-history">
+  <div class="portfolio-history-header">
+    <h2>Portfolio history</h2>
+    <div id="portfolio-history-range" class="range-buttons" aria-label="History range">
+      <button type="button" data-range="day" class="active">1 day</button>
+      <button type="button" data-range="month">1 month</button>
+      <button type="button" data-range="year">1 year</button>
+    </div>
+  </div>
+  <p id="portfolio-history-status" class="muted">Loading history…</p>
+  <div id="portfolio-charts" class="portfolio-charts"></div>
+</section>
+
+<script src="/js/portfolio.js"></script>

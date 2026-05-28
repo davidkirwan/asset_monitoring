@@ -50,6 +50,7 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 COPY --chown=appuser:appgroup Gemfile Gemfile.lock config.ru ./
 COPY --chown=appuser:appgroup lib/ lib/
 COPY --chown=appuser:appgroup views/ views/
+COPY --chown=appuser:appgroup public/ public/
 
 USER appuser
 
