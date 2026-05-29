@@ -23,6 +23,12 @@ RSpec.describe Asset::FxRates do
 
       expect(described_class.from_prices(prices)).to eq('eur' => 2.0, 'usd' => 2.2)
     end
+
+    it 'falls back to platinum when gold and silver are unavailable' do
+      prices = { 'platinum' => { 'eur' => 30.0, 'usd' => 33.0 } }
+
+      expect(described_class.from_prices(prices)).to eq('eur' => 30.0, 'usd' => 33.0)
+    end
   end
 
   describe '.convert' do

@@ -27,6 +27,17 @@
       defaultUnit: 'troy_oz'
     },
     {
+      id: 'platinum',
+      label: 'Platinum',
+      priced: true,
+      type: 'metal',
+      units: [
+        { id: 'troy_oz', label: 'troy oz' },
+        { id: 'grams', label: 'grams' }
+      ],
+      defaultUnit: 'troy_oz'
+    },
+    {
       id: 'bitcoin',
       label: 'Bitcoin',
       priced: true,
@@ -64,6 +75,14 @@
     {
       id: 'property',
       label: 'Property',
+      priced: false,
+      type: 'fiat',
+      units: FIATS.map(function (f) { return { id: f.toLowerCase(), label: f }; }),
+      defaultUnit: 'eur'
+    },
+    {
+      id: 'pension',
+      label: 'Pension',
       priced: false,
       type: 'fiat',
       units: FIATS.map(function (f) { return { id: f.toLowerCase(), label: f }; }),
@@ -177,6 +196,9 @@
 
     const silver = spotData.prices && spotData.prices.silver;
     if (silver && Object.keys(silver).length >= 2) return silver;
+
+    const platinum = spotData.prices && spotData.prices.platinum;
+    if (platinum && Object.keys(platinum).length >= 2) return platinum;
 
     return null;
   }
@@ -362,7 +384,7 @@
 
     FIATS.forEach(function (fiat) {
       if (nativeTotals[fiat]) {
-        addRow('Stocks, cash & property in ' + fiat, formatMoney(nativeTotals[fiat], fiat));
+        addRow('Stocks, cash, property & pension in ' + fiat, formatMoney(nativeTotals[fiat], fiat));
       }
     });
   }

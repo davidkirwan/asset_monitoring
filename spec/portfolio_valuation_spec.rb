@@ -42,5 +42,29 @@ RSpec.describe Asset::PortfolioValuation do
       expect(valuations['stocks']['eur']['value']).to be_within(0.01).of(40_909.09)
       expect(valuations['property']['jpy']['value']).to be_within(1.0).of(150_000.0)
     end
+
+    it 'converts pension using FX cross-rates' do
+      spot = {
+        'gold' => { 'eur' => 100.0, 'usd' => 110.0, 'gbp' => 90.0, 'jpy' => 15_000.0 }
+      }
+      holdings = { 'pension' => { 'amount' => '100000', 'unit' => 'eur' } }
+
+      valuations = described_class.compute(holdings, spot)
+
+      expect(valuations['pension']['eur']['value']).to eq(100_000.0)
+      expect(valuations['pension']['usd']['value']).to be_within(0.01).of(110_000.0)
+    end
+
+    it 'values platinum holdings like other metals' do
+      spot = { 'platinum' => { 'eur' => 30_000.0, 'usd' => 33_000.0 } }
+      holdings = { 'platinum' => { 'amount' => '1', 'unit' => 'troy_oz' } }
+
+      valuations = described_class.compute(holdings, spot)
+      kg = 1 * described_class::TROY_OZ_TO_KG
+
+      expect(valuations['platinum']['eur']['quantity']).to be_within(0.0001).of(kg)
+      expect(valuations['platinum']['eur']['value']).to be_within(0.01).of(kg * 30_000.0)
+      expect(valuations['platinum']['usd']['value']).to be_within(0.01).of(kg * 33_000.0)
+    end
   end
 end

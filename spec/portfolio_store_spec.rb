@@ -17,6 +17,8 @@ RSpec.describe Asset::PortfolioStore do
       data = store.load
       expect(data['summary_currency']).to eq('EUR')
       expect(data['holdings']['gold']).to eq('amount' => '', 'unit' => 'troy_oz')
+      expect(data['holdings']['platinum']).to eq('amount' => '', 'unit' => 'troy_oz')
+      expect(data['holdings']['pension']).to eq('amount' => '', 'unit' => 'eur')
       expect(data['holdings']['stocks']).to eq('amount' => '', 'unit' => 'eur')
     end
 
@@ -26,11 +28,13 @@ RSpec.describe Asset::PortfolioStore do
         'holdings' => {
           'gold' => { 'amount' => '12', 'unit' => 'grams' },
           'silver' => { 'amount' => '5', 'unit' => 'troy_oz' },
+          'platinum' => { 'amount' => '2', 'unit' => 'troy_oz' },
           'bitcoin' => { 'amount' => '25000000', 'unit' => 'satoshis' },
           'ethereum' => { 'amount' => '3.5', 'unit' => 'eth' },
           'stocks' => { 'amount' => '120000', 'unit' => 'usd' },
           'cash' => { 'amount' => '5000', 'unit' => 'eur' },
-          'property' => { 'amount' => '350000', 'unit' => 'gbp' }
+          'property' => { 'amount' => '350000', 'unit' => 'gbp' },
+          'pension' => { 'amount' => '250000', 'unit' => 'eur' }
         }
       }
 
@@ -39,6 +43,8 @@ RSpec.describe Asset::PortfolioStore do
 
       expect(loaded['summary_currency']).to eq('USD')
       expect(loaded['holdings']['stocks']).to eq('amount' => '120000', 'unit' => 'usd')
+      expect(loaded['holdings']['platinum']).to eq('amount' => '2', 'unit' => 'troy_oz')
+      expect(loaded['holdings']['pension']).to eq('amount' => '250000', 'unit' => 'eur')
       expect(loaded['holdings']['bitcoin']).to eq('amount' => '25000000', 'unit' => 'satoshis')
       expect(loaded['updated_at']).not_to be_nil
     end

@@ -154,6 +154,8 @@ RSpec.describe Asset::Monitoring do
       expect(last_response.status).to eq(200)
       data = JSON.parse(last_response.body)
       expect(data['summary_currency']).to eq('EUR')
+      expect(data['holdings']['platinum']['unit']).to eq('troy_oz')
+      expect(data['holdings']['pension']['unit']).to eq('eur')
       expect(data['holdings']['stocks']['unit']).to eq('eur')
       expect(data['persisted']).to be true
     end

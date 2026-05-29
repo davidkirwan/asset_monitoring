@@ -24,6 +24,7 @@ RSpec.describe Asset::SpotPrices do
 
       expect(data['prices']['gold']).to include('eur')
       expect(data['prices']['silver']).to include('usd')
+      expect(data['prices']['platinum']).to include('eur')
       expect(data['prices']['bitcoin']).to include('usd')
       expect(data['prices']['ethereum']).to include('eur')
       expect(data['units']).to include('gold' => 'per_kg', 'bitcoin' => 'per_coin')

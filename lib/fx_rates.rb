@@ -5,7 +5,7 @@ require_relative 'portfolio_constants'
 module Asset
   # Derives fiat cross-rates from multi-currency commodity spot quotes.
   module FxRates
-    REFERENCE_ASSETS = %w[gold silver].freeze
+    REFERENCE_ASSETS = %w[gold silver platinum].freeze
 
     module_function
 

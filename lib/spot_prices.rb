@@ -10,7 +10,8 @@ module Asset
   module SpotPrices
     METALS = {
       'gold' => 'bullion_gold_london_buy',
-      'silver' => 'bullion_silver_london_buy'
+      'silver' => 'bullion_silver_london_buy',
+      'platinum' => 'bullion_platinum_london_buy'
     }.freeze
     CRYPTOS = {
       'bitcoin' => 'crypto_btc',
@@ -32,6 +33,7 @@ module Asset
         'units' => {
           'gold' => METAL_PRICE_UNIT,
           'silver' => METAL_PRICE_UNIT,
+          'platinum' => METAL_PRICE_UNIT,
           'bitcoin' => CRYPTO_PRICE_UNIT,
           'ethereum' => CRYPTO_PRICE_UNIT
         },

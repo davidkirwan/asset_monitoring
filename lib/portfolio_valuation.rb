@@ -41,7 +41,7 @@ module Asset
       asset_prices = prices[asset_id] || {}
 
       case asset_id
-      when 'gold', 'silver'
+      when 'gold', 'silver', 'platinum'
         kg = metal_to_kg(amount, unit)
         price_values(asset_prices) { |price| { 'quantity' => kg, 'value' => kg * price } }
       when 'bitcoin'
@@ -51,7 +51,7 @@ module Asset
         return empty_currencies unless unit == 'eth'
 
         price_values(asset_prices) { |price| { 'quantity' => amount, 'value' => amount * price } }
-      when 'stocks', 'cash', 'property'
+      when 'stocks', 'cash', 'property', 'pension'
         FxRates.fiat_values(amount, unit, FxRates.from_prices(prices))
       else
         empty_currencies
