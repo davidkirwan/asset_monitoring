@@ -6,6 +6,8 @@ module Asset
     ASSET_IDS = %w[gold silver platinum bitcoin ethereum stocks cash property pension].freeze
     SUMMARY_CURRENCIES = %w[EUR USD GBP JPY].freeze
     FIATS = SUMMARY_CURRENCIES.map(&:downcase).freeze
+    METALS = %w[gold silver platinum].freeze
+    FIAT_HOLDINGS = %w[stocks cash property pension].freeze
 
     ASSET_LABELS = {
       'gold' => 'Gold',

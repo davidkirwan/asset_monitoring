@@ -10,9 +10,10 @@ require 'rubocop/rake_task'
 # when Rake spawns subshells via `sh`.
 def ensure_gem_exec_path!
   paths = ENV.fetch('PATH', '').split(File::PATH_SEPARATOR)
-  [ENV['GEM_HOME'], Gem.dir].compact.filter_map do |base|
-    File.join(base, 'bin') if base && !base.empty?
-  end.each do |bin|
+  gem_bins = [ENV.fetch('GEM_HOME', nil), Gem.dir].compact.filter_map do |base|
+    File.join(base, 'bin') unless base.empty?
+  end
+  gem_bins.each do |bin|
     paths.unshift(bin) unless paths.include?(bin)
   end
   ENV['PATH'] = paths.join(File::PATH_SEPARATOR)
@@ -27,7 +28,7 @@ IMAGE = 'asset-monitoring:latest'
 DATA_DIR = File.expand_path(ENV.fetch('DATA_DIR', 'data'), __dir__)
 CONTAINER_DATA_DIR = '/data'
 PRICE_HISTORY_DB_PATH = File.join(CONTAINER_DATA_DIR, 'asset_history.db')
-RACKUP_CMD = ['bundle', 'exec', 'rackup', 'config.ru', '--host', APP_HOST, '-p', APP_PORT]
+RACKUP_CMD = ['bundle', 'exec', 'rackup', 'config.ru', '--host', APP_HOST, '-p', APP_PORT].freeze
 
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:rubocop)

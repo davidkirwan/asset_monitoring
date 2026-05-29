@@ -5,25 +5,43 @@ require 'portfolio_valuation'
 
 RSpec.describe Asset::PortfolioValuation do
   describe '.compute and .totals' do
-    it 'values commodity, crypto, and cash holdings in all fiat currencies' do
-      spot = {
+    let(:spot) do
+      {
         'gold' => { 'eur' => 100.0, 'usd' => 110.0, 'gbp' => 90.0, 'jpy' => 15_000.0 },
         'bitcoin' => { 'eur' => 50_000.0, 'usd' => 55_000.0 }
       }
-      holdings = {
-        'gold' => { 'amount' => '64.301', 'unit' => 'grams' },
-        'bitcoin' => { 'amount' => '0.5', 'unit' => 'btc' },
-        'cash' => { 'amount' => '1000', 'unit' => 'eur' }
-      }
+    end
 
+    it 'values gold in fiat currencies' do
+      holdings = { 'gold' => { 'amount' => '100', 'unit' => 'grams' } }
       valuations = described_class.compute(holdings, spot)
-      totals = described_class.totals(valuations)
 
       expect(valuations['gold']['eur']['quantity']).to be_within(0.001).of(0.1)
       expect(valuations['gold']['eur']['value']).to be_within(0.01).of(10.0)
+    end
+
+    it 'values bitcoin and cash holdings' do
+      holdings = {
+        'bitcoin' => { 'amount' => '0.5', 'unit' => 'btc' },
+        'cash' => { 'amount' => '1000', 'unit' => 'eur' }
+      }
+      valuations = described_class.compute(holdings, spot)
+
       expect(valuations['bitcoin']['usd']['value']).to eq(27_500.0)
-      expect(valuations['cash']['eur']['value']).to eq(1000.0)
-      expect(valuations['cash']['usd']['value']).to eq(1100.0)
+      expect(valuations['cash']).to include(
+        'eur' => include('value' => 1000.0),
+        'usd' => include('value' => 1100.0)
+      )
+    end
+
+    it 'sums valuations across asset types' do
+      holdings = {
+        'gold' => { 'amount' => '100', 'unit' => 'grams' },
+        'bitcoin' => { 'amount' => '0.5', 'unit' => 'btc' },
+        'cash' => { 'amount' => '1000', 'unit' => 'eur' }
+      }
+      totals = described_class.totals(described_class.compute(holdings, spot))
+
       expect(totals['eur']).to be_within(0.01).of(26_010.0)
       expect(totals['usd']).to be_within(0.01).of(28_611.0)
     end

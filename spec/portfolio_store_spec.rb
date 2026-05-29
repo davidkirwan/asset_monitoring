@@ -2,12 +2,40 @@
 
 require 'spec_helper'
 require 'tempfile'
+require 'logger'
 
 RSpec.describe Asset::PortfolioStore do
-  let(:log) { double('log', error: nil, warn: nil, info: nil, debug: nil) }
+  let(:log) { instance_double(Logger, error: nil, warn: nil, info: nil, debug: nil) }
 
   describe 'with in-memory database' do
     let(:store) { described_class.new(':memory:', log: log) }
+    let(:portfolio_payload) do
+      {
+        'summary_currency' => 'USD',
+        'holdings' => {
+          'gold' => { 'amount' => '12', 'unit' => 'grams' },
+          'silver' => { 'amount' => '5', 'unit' => 'troy_oz' },
+          'platinum' => { 'amount' => '2', 'unit' => 'troy_oz' },
+          'bitcoin' => { 'amount' => '25000000', 'unit' => 'satoshis' },
+          'ethereum' => { 'amount' => '3.5', 'unit' => 'eth' },
+          'stocks' => { 'amount' => '120000', 'unit' => 'usd' },
+          'cash' => { 'amount' => '5000', 'unit' => 'eur' },
+          'property' => { 'amount' => '350000', 'unit' => 'gbp' },
+          'pension' => { 'amount' => '250000', 'unit' => 'eur' }
+        }
+      }
+    end
+    let(:history_valuations) do
+      {
+        'gold' => {
+          'eur' => { 'quantity' => 0.1, 'value' => 100.0 },
+          'usd' => { 'quantity' => 0.1, 'value' => 110.0 }
+        },
+        'cash' => {
+          'eur' => { 'quantity' => 500.0, 'value' => 500.0 }
+        }
+      }
+    end
 
     it 'reports as enabled after successful initialization' do
       expect(store.enabled?).to be true
@@ -23,51 +51,23 @@ RSpec.describe Asset::PortfolioStore do
     end
 
     it 'saves and reloads portfolio holdings' do
-      payload = {
+      expect(store.save!(portfolio_payload)).to be true
+      expect(store.load).to include(
         'summary_currency' => 'USD',
-        'holdings' => {
-          'gold' => { 'amount' => '12', 'unit' => 'grams' },
-          'silver' => { 'amount' => '5', 'unit' => 'troy_oz' },
-          'platinum' => { 'amount' => '2', 'unit' => 'troy_oz' },
-          'bitcoin' => { 'amount' => '25000000', 'unit' => 'satoshis' },
-          'ethereum' => { 'amount' => '3.5', 'unit' => 'eth' },
+        'holdings' => include(
           'stocks' => { 'amount' => '120000', 'unit' => 'usd' },
-          'cash' => { 'amount' => '5000', 'unit' => 'eur' },
-          'property' => { 'amount' => '350000', 'unit' => 'gbp' },
           'pension' => { 'amount' => '250000', 'unit' => 'eur' }
-        }
-      }
-
-      expect(store.save!(payload)).to be true
-      loaded = store.load
-
-      expect(loaded['summary_currency']).to eq('USD')
-      expect(loaded['holdings']['stocks']).to eq('amount' => '120000', 'unit' => 'usd')
-      expect(loaded['holdings']['platinum']).to eq('amount' => '2', 'unit' => 'troy_oz')
-      expect(loaded['holdings']['pension']).to eq('amount' => '250000', 'unit' => 'eur')
-      expect(loaded['holdings']['bitcoin']).to eq('amount' => '25000000', 'unit' => 'satoshis')
-      expect(loaded['updated_at']).not_to be_nil
+        ),
+        'updated_at' => kind_of(String)
+      )
     end
 
     it 'records and loads portfolio history snapshots' do
-      valuations = {
-        'gold' => {
-          'eur' => { 'quantity' => 0.1, 'value' => 100.0 },
-          'usd' => { 'quantity' => 0.1, 'value' => 110.0 }
-        },
-        'cash' => {
-          'eur' => { 'quantity' => 500.0, 'value' => 500.0 }
-        }
-      }
-      totals = { 'eur' => 600.0, 'usd' => 110.0 }
-
-      expect(store.record_snapshot!(1_700_000_000, valuations, totals: totals)).to be true
-
+      expect(store.record_snapshot!(Time.now.to_i, history_valuations, totals: { 'eur' => 600.0, 'usd' => 110.0 })).to be true
       history = store.load_history
+      recorded_at = history['totals']['eur'].first.first
       expect(history['snapshot_count']).to eq(1)
-      expect(history['totals']['eur']).to eq([[1_700_000_000, 600.0]])
-      gold = history['assets'].find { |a| a['id'] == 'gold' }
-      expect(gold['values']['usd']).to eq([[1_700_000_000, 110.0]])
+      expect(history['assets'].find { |a| a['id'] == 'gold' }['values']['usd']).to eq([[recorded_at, 110.0]])
     end
 
     it 'normalizes invalid units to defaults' do

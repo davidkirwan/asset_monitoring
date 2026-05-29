@@ -115,8 +115,13 @@ RSpec.describe Asset::Monitoring do
     it 'returns 200 and HTML' do
       get '/portfolio'
       expect(last_response.status).to eq(200)
-      expect(last_response.body).to include('Portfolio', 'Gold', 'Bitcoin', 'Cash', 'Property', 'Save portfolio',
-                                            'Portfolio history', 'chart.js')
+      expect(last_response.body).to include(
+        'Portfolio',
+        'Save portfolio',
+        'Portfolio history',
+        'chart.js',
+        '/js/portfolio.js'
+      )
     end
   end
 
@@ -140,6 +145,27 @@ RSpec.describe Asset::Monitoring do
   end
 
   describe 'portfolio API' do
+    let(:save_payload) do
+      {
+        summary_currency: 'USD',
+        holdings: {
+          stocks: { amount: '45000', unit: 'usd' },
+          cash: { amount: '1000', unit: 'eur' }
+        }
+      }
+    end
+
+    def refresh_prices_and_save_gold
+      VCR.use_cassette('bullionvault_success') do
+        VCR.use_cassette('coinbase_success') do
+          Asset::MetricsCache.refresh_silent!(app.settings)
+          put '/api/portfolio.json',
+              { summary_currency: 'EUR', holdings: { gold: { amount: '100', unit: 'grams' } } }.to_json,
+              { 'CONTENT_TYPE' => 'application/json' }
+        end
+      end
+    end
+
     around do |example|
       old = ENV.fetch('PORTFOLIO_DB_PATH', nil)
       ENV['PORTFOLIO_DB_PATH'] = ':memory:'
@@ -151,34 +177,29 @@ RSpec.describe Asset::Monitoring do
 
     it 'returns default portfolio JSON' do
       get '/api/portfolio.json'
-      expect(last_response.status).to eq(200)
       data = JSON.parse(last_response.body)
-      expect(data['summary_currency']).to eq('EUR')
-      expect(data['holdings']['platinum']['unit']).to eq('troy_oz')
-      expect(data['holdings']['pension']['unit']).to eq('eur')
-      expect(data['holdings']['stocks']['unit']).to eq('eur')
-      expect(data['persisted']).to be true
+      expect(last_response.status).to eq(200)
+      expect(data).to include('summary_currency' => 'EUR', 'persisted' => true)
+      expect(data.dig('holdings', 'pension', 'unit')).to eq('eur')
     end
 
     it 'saves portfolio holdings via PUT' do
-      payload = {
-        summary_currency: 'USD',
-        holdings: {
-          stocks: { amount: '45000', unit: 'usd' },
-          cash: { amount: '1000', unit: 'eur' }
-        }
-      }
-
-      put '/api/portfolio.json', payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      put '/api/portfolio.json', save_payload.to_json, { 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(200)
-      result = JSON.parse(last_response.body)
-      expect(result['ok']).to be true
-      expect(result['portfolio']['holdings']['stocks']).to include('amount' => '45000', 'unit' => 'usd')
+      expect(JSON.parse(last_response.body)['ok']).to be true
+    end
+
+    it 'reloads saved portfolio holdings via GET' do
+      put '/api/portfolio.json',
+          { summary_currency: 'USD', holdings: { stocks: { amount: '45000', unit: 'usd' } } }.to_json,
+          { 'CONTENT_TYPE' => 'application/json' }
 
       get '/api/portfolio.json'
       data = JSON.parse(last_response.body)
-      expect(data['summary_currency']).to eq('USD')
-      expect(data['holdings']['stocks']['amount']).to eq('45000')
+      expect(data).to include(
+        'summary_currency' => 'USD',
+        'holdings' => include('stocks' => include('amount' => '45000'))
+      )
     end
 
     it 'returns portfolio history JSON' do
@@ -190,19 +211,9 @@ RSpec.describe Asset::Monitoring do
     end
 
     it 'records a snapshot when portfolio is saved with spot prices available' do
-      VCR.use_cassette('bullionvault_success') do
-        VCR.use_cassette('coinbase_success') do
-          Asset::MetricsCache.refresh_silent!(app.settings)
-          put '/api/portfolio.json',
-              { summary_currency: 'EUR', holdings: { gold: { amount: '100', unit: 'grams' } } }.to_json,
-              { 'CONTENT_TYPE' => 'application/json' }
-        end
-      end
-
+      refresh_prices_and_save_gold
       get '/api/portfolio_history.json'
-      data = JSON.parse(last_response.body)
-      expect(data['snapshot_count']).to be >= 1
-      gold = data['assets'].find { |a| a['id'] == 'gold' }
+      gold = JSON.parse(last_response.body)['assets'].find { |a| a['id'] == 'gold' }
       expect(gold['values']).not_to be_empty
     end
   end

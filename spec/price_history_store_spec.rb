@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 require 'tempfile'
+require 'logger'
 
 RSpec.describe Asset::PriceHistoryStore do
-  let(:log) { double('log', error: nil, warn: nil, debug: nil) }
+  let(:log) { instance_double(Logger, error: nil, warn: nil, debug: nil) }
 
   describe 'with in-memory database' do
     let(:store) { described_class.new(':memory:', retention_days: 7, log: log) }
@@ -79,7 +80,7 @@ RSpec.describe Asset::PriceHistoryStore do
     end
 
     after do
-      File.unlink(temp_db) if File.exist?(temp_db)
+      FileUtils.rm_f(temp_db)
     end
 
     it 'creates the database file on disk during initialization' do
@@ -160,11 +161,9 @@ RSpec.describe Asset::PriceHistory do
       CB
 
       data = described_class.to_api_hash
-      expect(data['retention_days']).to eq(5)
+      expect(data).to include('retention_days' => 5)
       expect(data['scrape_count']).to be >= 1
-
-      ids = data['series'].map { |s| s['id'] }
-      expect(ids).to include('bullion_gold_london_buy_eur', 'crypto_btc_usd')
+      expect(data['series'].map { |s| s['id'] }).to include('bullion_gold_london_buy_eur', 'crypto_btc_usd')
     end
 
     it 'survives clear + re-record and still persists to the backing store' do

@@ -29,13 +29,13 @@ module Asset
         log = resolve_logger
         store = PriceHistoryStore.new(db_path, retention_days: @retention_days, log: log)
         unless store.enabled?
-          log_warn("SQLite price history disabled; could not open #{db_path} (check directory permissions)")
+          log(:warn, "SQLite price history disabled; could not open #{db_path} (check directory permissions)")
           @store = nil
           return
         end
 
         @store = store
-        log_info("SQLite price history enabled at #{db_path} (retention: #{@retention_days} days)")
+        log(:info, "SQLite price history enabled at #{db_path} (retention: #{@retention_days} days)")
         hydrate_from_store!
       end
 
@@ -71,23 +71,25 @@ module Asset
 
       def to_api_hash
         points, help = MUTEX.synchronize { [@points.dup, @help.dup] }
-        all_keys = points.flat_map { |p| p[:v].keys }.uniq.sort
-        series = all_keys.map do |key|
+        {
+          'retention_days' => @retention_days,
+          'scrape_count' => points.length,
+          'updated_at' => Time.now.utc.iso8601(3),
+          'series' => build_series(points, help)
+        }
+      end
+
+      private
+
+      def build_series(points, help)
+        points.flat_map { |p| p[:v].keys }.uniq.sort.map do |key|
           {
             'id' => key,
             'label' => help[key] || key,
             'points' => points.filter_map { |p| p[:v][key] ? [p[:t], p[:v][key]] : nil }
           }
         end
-        {
-          'retention_days' => @retention_days,
-          'scrape_count' => points.length,
-          'updated_at' => Time.now.utc.iso8601(3),
-          'series' => series
-        }
       end
-
-      private
 
       def resolve_retention_days
         val = ENV.fetch('PRICE_HISTORY_RETENTION_DAYS', DEFAULT_RETENTION_DAYS.to_s).to_i
@@ -103,19 +105,10 @@ module Asset
         settings.log
       end
 
-      def log_info(message)
+      def log(level, message)
         logger = resolve_logger
-        if logger.respond_to?(:info)
-          logger.info(message)
-        else
-          warn "[PriceHistory] #{message}"
-        end
-      end
-
-      def log_warn(message)
-        logger = resolve_logger
-        if logger.respond_to?(:warn)
-          logger.warn(message)
+        if logger.respond_to?(level)
+          logger.public_send(level, message)
         else
           warn "[PriceHistory] #{message}"
         end

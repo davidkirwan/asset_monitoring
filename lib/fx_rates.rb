@@ -28,13 +28,26 @@ module Asset
       from = from.to_s.downcase
       to = to.to_s.downcase
       return amount.to_f if from == to
+
+      factor = conversion_factor(from, to, reference_quotes)
+      return nil unless factor
+
+      amount.to_f * factor
+    end
+
+    def conversion_factor(from, to, reference_quotes)
+      base = positive_rate(reference_quotes, from)
+      target = positive_rate(reference_quotes, to)
+      return nil unless base && target
+
+      target / base
+    end
+
+    def positive_rate(reference_quotes, currency)
       return nil unless reference_quotes
 
-      base = reference_quotes[from]&.to_f
-      target = reference_quotes[to]&.to_f
-      return nil unless base&.positive? && target&.positive?
-
-      amount.to_f * (target / base)
+      rate = reference_quotes[currency].to_f
+      rate.positive? ? rate : nil
     end
 
     def fiat_values(amount, unit, reference_quotes)

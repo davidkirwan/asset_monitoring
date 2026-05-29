@@ -11,6 +11,8 @@ module Asset
 
     ASSET_LABELS = PortfolioConstants::ASSET_LABELS
     FIATS = PortfolioConstants::FIATS
+    METALS = PortfolioConstants::METALS
+    FIAT_HOLDINGS = PortfolioConstants::FIAT_HOLDINGS
 
     module_function
 
@@ -40,22 +42,32 @@ module Asset
       unit = holding['unit'].to_s.downcase
       asset_prices = prices[asset_id] || {}
 
-      case asset_id
-      when 'gold', 'silver', 'platinum'
-        kg = metal_to_kg(amount, unit)
-        price_values(asset_prices) { |price| { 'quantity' => kg, 'value' => kg * price } }
-      when 'bitcoin'
-        coins = bitcoin_amount(amount, unit)
-        price_values(asset_prices) { |price| { 'quantity' => coins, 'value' => coins * price } }
-      when 'ethereum'
-        return empty_currencies unless unit == 'eth'
+      return value_metal(amount, unit, asset_prices) if METALS.include?(asset_id)
+      return value_bitcoin(amount, unit, asset_prices) if asset_id == 'bitcoin'
+      return value_ethereum(amount, unit, asset_prices) if asset_id == 'ethereum'
+      return value_fiat_holding(amount, unit, prices) if FIAT_HOLDINGS.include?(asset_id)
 
-        price_values(asset_prices) { |price| { 'quantity' => amount, 'value' => amount * price } }
-      when 'stocks', 'cash', 'property', 'pension'
-        FxRates.fiat_values(amount, unit, FxRates.from_prices(prices))
-      else
-        empty_currencies
-      end
+      empty_currencies
+    end
+
+    def value_metal(amount, unit, asset_prices)
+      kg = metal_to_kg(amount, unit)
+      price_values(asset_prices) { |price| { 'quantity' => kg, 'value' => kg * price } }
+    end
+
+    def value_bitcoin(amount, unit, asset_prices)
+      coins = bitcoin_amount(amount, unit)
+      price_values(asset_prices) { |price| { 'quantity' => coins, 'value' => coins * price } }
+    end
+
+    def value_ethereum(amount, unit, asset_prices)
+      return empty_currencies unless unit == 'eth'
+
+      price_values(asset_prices) { |price| { 'quantity' => amount, 'value' => amount * price } }
+    end
+
+    def value_fiat_holding(amount, unit, prices)
+      FxRates.fiat_values(amount, unit, FxRates.from_prices(prices))
     end
 
     def parse_amount(value)

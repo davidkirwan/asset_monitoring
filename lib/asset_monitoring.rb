@@ -11,6 +11,9 @@ require_relative 'spot_prices'
 require_relative 'portfolio'
 
 module Asset
+  CHART_JS_HEAD = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" ' \
+                  'crossorigin="anonymous"></script>'
+
   class Monitoring < Sinatra::Base
     configure do
       set :root, File.expand_path('..', __dir__)
@@ -51,7 +54,7 @@ module Asset
       @active_tab = 'portfolio'
       @page_title = 'Portfolio — Asset Monitoring'
       @page_subtitle = 'Track holdings in your preferred units.'
-      @extra_head = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>'
+      @extra_head = CHART_JS_HEAD
       erb :portfolio, layout: :layout
     end
 
@@ -59,7 +62,7 @@ module Asset
       @active_tab = 'dashboard'
       @page_title = 'Dashboard — Asset Monitoring'
       @page_subtitle = 'One sample per background scrape.'
-      @extra_head = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>'
+      @extra_head = CHART_JS_HEAD
       erb :dashboard, layout: :layout
     end
 
@@ -74,25 +77,11 @@ module Asset
     end
 
     put '/api/portfolio.json' do
-      content_type 'application/json; charset=utf-8'
-      payload = JSON.parse(request.body.read)
-      result = Asset::Portfolio.save!(payload)
-      status result['ok'] ? 200 : 503
-      JSON.generate(result)
-    rescue JSON::ParserError
-      status 400
-      JSON.generate('ok' => false, 'error' => 'Invalid JSON body')
+      portfolio_save_response
     end
 
     post '/api/portfolio.json' do
-      content_type 'application/json; charset=utf-8'
-      payload = JSON.parse(request.body.read)
-      result = Asset::Portfolio.save!(payload)
-      status result['ok'] ? 200 : 503
-      JSON.generate(result)
-    rescue JSON::ParserError
-      status 400
-      JSON.generate('ok' => false, 'error' => 'Invalid JSON body')
+      portfolio_save_response
     end
 
     get '/api/portfolio_history.json' do
@@ -128,6 +117,17 @@ module Asset
     end
 
     private
+
+    def portfolio_save_response
+      content_type 'application/json; charset=utf-8'
+      payload = JSON.parse(request.body.read)
+      result = Asset::Portfolio.save!(payload)
+      status result['ok'] ? 200 : 503
+      JSON.generate(result)
+    rescue JSON::ParserError
+      status 400
+      JSON.generate('ok' => false, 'error' => 'Invalid JSON body')
+    end
 
     def app_metrics
       t = Asset::MetricsCache.last_scrape_epoch

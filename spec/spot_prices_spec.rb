@@ -18,15 +18,25 @@ RSpec.describe Asset::SpotPrices do
       end
     end
 
-    it 'includes structured metal and crypto prices' do
+    it 'includes structured metal prices' do
       Asset::MetricsCache.refresh_silent!(Asset::Monitoring.settings)
       data = described_class.to_api_hash
 
-      expect(data['prices']['gold']).to include('eur')
-      expect(data['prices']['silver']).to include('usd')
-      expect(data['prices']['platinum']).to include('eur')
-      expect(data['prices']['bitcoin']).to include('usd')
-      expect(data['prices']['ethereum']).to include('eur')
+      expect(data['prices']).to include(
+        'gold' => include('eur'),
+        'silver' => include('usd'),
+        'platinum' => include('eur')
+      )
+    end
+
+    it 'includes structured crypto prices and FX quotes' do
+      Asset::MetricsCache.refresh_silent!(Asset::Monitoring.settings)
+      data = described_class.to_api_hash
+
+      expect(data['prices']).to include(
+        'bitcoin' => include('usd'),
+        'ethereum' => include('eur')
+      )
       expect(data['units']).to include('gold' => 'per_kg', 'bitcoin' => 'per_coin')
       expect(data['fx_quotes']).to include('eur', 'usd')
     end

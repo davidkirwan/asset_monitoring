@@ -118,18 +118,17 @@ module Asset
       end
 
       def log_info(message)
-        logger = resolve_logger
-        if logger.respond_to?(:info)
-          logger.info(message)
-        else
-          warn "[Portfolio] #{message}"
-        end
+        log(:info, message)
       end
 
       def log_warn(message)
+        log(:warn, message)
+      end
+
+      def log(level, message)
         logger = resolve_logger
-        if logger.respond_to?(:warn)
-          logger.warn(message)
+        if logger.respond_to?(level)
+          logger.public_send(level, message)
         else
           warn "[Portfolio] #{message}"
         end
