@@ -45,3 +45,5 @@ Thumbs.db
 # Local SQLite price history (see data/.gitkeep)
 /data/*
 !/data/.gitkeep
+
+.cursor
