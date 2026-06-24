@@ -18,12 +18,138 @@ Open http://localhost:8080. `rake dev` adds auto-reload. `rake help` lists all t
 
 == Run with Podman
 
+Images are published to link:https://quay.io/dkirwan/asset-monitoring[quay.io/dkirwan/asset-monitoring].
+
+* `make podman-build` / `rake podman:build` tags a local build as `quay.io/dkirwan/asset-monitoring:dev`
+* `make podman-run` / `rake podman:run` runs `quay.io/dkirwan/asset-monitoring:latest` (pulled from Quay if not present locally)
+
+Run the published image:
+
 ```
-rake podman:build
-rake podman:run
+make podman-run
+```
+
+Run a local dev build:
+
+```
+make podman-build
+USE_DEV_IMAGE=true make podman-run
 ```
 
 Binds `./data` → `/data` with SQLite for price and portfolio history (365-day retention by default). Override with `DATA_DIR`, `PRICE_HISTORY_RETENTION_DAYS`, `PRICE_HISTORY_DB_PATH`, `PORTFOLIO_DB_PATH`.
+
+Override image tags:
+
+```
+BUILD_IMAGE=quay.io/dkirwan/asset-monitoring:dev make podman-build
+IMAGE=quay.io/dkirwan/asset-monitoring:latest make podman-run
+```
+
+After building locally, push the dev image to Quay when you are ready to publish:
+
+```
+podman push quay.io/dkirwan/asset-monitoring:dev
+```
+
+== Running as a systemd service
+
+Podman integrates with systemd through link:https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html[Quadlet].
+A `.container` unit in `deploy/asset-monitoring.container` describes the service; systemd generates `asset-monitoring.service` from it at `daemon-reload` time.
+
+This matches `rake podman:run` / `make podman-run`: the Quay `:latest` image, port `8080`, SQLite under `/data`, and 365-day price history retention.
+
+Quadlet-generated units are *transient* — do not run `systemctl enable` on them (that fails with "Unit is transient or generated"). Boot wiring is handled by the `[Install]` section in the `.container` file when you run `daemon-reload`.
+
+=== Requirements
+
+* Podman with Quadlet support (Fedora 38+, RHEL 9+, or recent Podman elsewhere)
+* systemd user session (for a rootless service) or root (for a system service)
+
+=== Install (rootless, per user)
+
+Create a data directory, pull the image, and install the Quadlet unit:
+
+[source,bash]
+----
+mkdir -p ~/.local/share/asset-monitoring/data
+podman pull quay.io/dkirwan/asset-monitoring:latest
+mkdir -p ~/.config/containers/systemd
+cp deploy/asset-monitoring.container ~/.config/containers/systemd/
+systemctl --user daemon-reload
+systemctl --user start asset-monitoring.service
+----
+
+`daemon-reload` reads the `.container` file, generates the service unit, and applies the `[Install]` section (`WantedBy=default.target`) so the service starts on future user logins. Use `start` (not `enable`) to run it immediately.
+
+Open http://localhost:8080/portfolio once the service is active.
+
+The default unit stores SQLite data in `~/.local/share/asset-monitoring/data`. Edit the `Volume=` line in `~/.config/containers/systemd/asset-monitoring.container` before `daemon-reload` if you want a different path.
+
+To keep the service running after you log out (and across reboots without a graphical login), enable linger:
+
+[source,bash]
+----
+loginctl enable-linger "$USER"
+----
+
+=== Install (system-wide)
+
+For a machine-wide service running as root:
+
+[source,bash]
+----
+sudo mkdir -p /var/lib/asset-monitoring/data
+sudo podman pull quay.io/dkirwan/asset-monitoring:latest
+----
+
+Copy `deploy/asset-monitoring.container` to `/etc/containers/systemd/asset-monitoring.container`, then adjust:
+
+* `Volume=` — e.g. `/var/lib/asset-monitoring/data:/data:Z` (replace the default `%h/.local/share/...` path)
+* `[Install]` — set `WantedBy=multi-user.target`
+
+Reload and start:
+
+[source,bash]
+----
+sudo systemctl daemon-reload
+sudo systemctl start asset-monitoring.service
+----
+
+=== Interacting with the service
+
+Rootless (per-user) commands:
+
+[source,bash]
+----
+systemctl --user status asset-monitoring.service
+systemctl --user restart asset-monitoring.service
+systemctl --user stop asset-monitoring.service
+journalctl --user -u asset-monitoring.service -f
+----
+
+System-wide commands use `sudo systemctl` and `sudo journalctl` without `--user`.
+
+After editing the `.container` file, reload systemd before restarting:
+
+[source,bash]
+----
+systemctl --user daemon-reload
+systemctl --user restart asset-monitoring.service
+----
+
+=== Updating the image
+
+Pull a newer image and restart:
+
+[source,bash]
+----
+podman pull quay.io/dkirwan/asset-monitoring:latest
+systemctl --user restart asset-monitoring.service
+----
+
+The unit sets `io.containers.autoupdate=registry` so link:https://docs.podman.io/en/latest/markdown/podman-auto-update.1.html[`podman auto-update`] can refresh the image on a schedule if you enable that separately.
+
+To run a local `:dev` image instead, change `Image=` in the `.container` file to `quay.io/dkirwan/asset-monitoring:dev` (or your own tag), run `daemon-reload`, then restart the service.
 
 == API
 
@@ -49,6 +175,12 @@ Portfolio snapshots are recorded on save and after each successful scrape. Stock
 |`PRICE_HISTORY_RETENTION_DAYS` |History retention in days (default `7`; `rake podman:run` uses `365`)
 |`RACK_ENV` |`production` / `development` / `test`
 |===
+
+Make/Rake-only variables (not read from `.env`):
+
+* `USE_DEV_IMAGE` — when `true`, `1`, or `yes`, `podman:run` uses `quay.io/dkirwan/asset-monitoring:dev` instead of `:latest`
+* `BUILD_IMAGE` — image tag for `podman:build` (default: `quay.io/dkirwan/asset-monitoring:dev`)
+* `IMAGE` — image tag for `podman:run` when `USE_DEV_IMAGE` is unset (default: `quay.io/dkirwan/asset-monitoring:latest`)
 
 == Kubernetes
 

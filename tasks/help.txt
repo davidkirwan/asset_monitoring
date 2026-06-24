@@ -23,8 +23,13 @@ Security:
   rake brakeman / make brakeman     - Run brakeman only
 
 Podman:
-  rake podman:build / make podman-build   - Build the container image
-  rake podman:run / make podman-run       - Run the container (365-day retention, SQLite in ./data)
+  rake podman:build / make podman-build   - Build image as quay.io/dkirwan/asset-monitoring:dev
+  rake podman:run / make podman-run       - Run quay.io/dkirwan/asset-monitoring:latest (365-day retention, SQLite in ./data)
+
+  Image tags (override via env):
+    BUILD_IMAGE=quay.io/dkirwan/asset-monitoring:dev   - Tag for podman:build
+    IMAGE=quay.io/dkirwan/asset-monitoring:latest      - Tag for podman:run
+    USE_DEV_IMAGE=true                                 - Run the :dev image instead of :latest
 
   podman:run defaults (override via env):
     PRICE_HISTORY_RETENTION_DAYS=365      - Retain price history for one year

@@ -1,0 +1,23 @@
+[Unit]
+Description=asset-monitoring metrics exporter and portfolio tracker
+Documentation=https://github.com/davidkirwan/asset_monitoring
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=quay.io/dkirwan/asset-monitoring:latest
+ContainerName=asset-monitoring
+PublishPort=8080:8080
+Volume=%h/.local/share/asset-monitoring/data:/data:Z
+Environment=PRICE_HISTORY_RETENTION_DAYS=365
+Environment=PRICE_HISTORY_DB_PATH=/data/asset_history.db
+Environment=PORTFOLIO_DB_PATH=/data/portfolio.db
+Environment=RACK_ENV=production
+Label=io.containers.autoupdate=registry
+
+[Service]
+Restart=always
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target

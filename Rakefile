@@ -24,11 +24,23 @@ ensure_gem_exec_path!
 APP_HOST = ENV.fetch('HOST', '0.0.0.0')
 APP_PORT = ENV.fetch('PORT', '8080')
 CONTAINERFILE = 'Containerfile'
-IMAGE = 'asset-monitoring:latest'
+DEFAULT_IMAGE = 'quay.io/dkirwan/asset-monitoring:latest'
+DEFAULT_BUILD_IMAGE = 'quay.io/dkirwan/asset-monitoring:dev'
 DATA_DIR = File.expand_path(ENV.fetch('DATA_DIR', 'data'), __dir__)
 CONTAINER_DATA_DIR = '/data'
 PRICE_HISTORY_DB_PATH = File.join(CONTAINER_DATA_DIR, 'asset_history.db')
 RACKUP_CMD = ['bundle', 'exec', 'rackup', 'config.ru', '--host', APP_HOST, '-p', APP_PORT].freeze
+
+def build_image
+  ENV.fetch('BUILD_IMAGE', DEFAULT_BUILD_IMAGE)
+end
+
+def run_image
+  use_dev = ENV.fetch('USE_DEV_IMAGE', '').strip.downcase
+  return build_image if %w[true 1 yes].include?(use_dev)
+
+  ENV.fetch('IMAGE', DEFAULT_IMAGE)
+end
 
 RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:rubocop)
@@ -94,7 +106,7 @@ end
 namespace :podman do
   desc 'Build the container image'
   task :build do
-    sh 'podman', 'build', '-t', IMAGE, '-f', CONTAINERFILE, '.'
+    sh 'podman', 'build', '-t', build_image, '-f', CONTAINERFILE, '.'
   end
 
   desc 'Run the container (1-year price history, SQLite in ./data bind-mounted to /data)'
@@ -112,7 +124,7 @@ namespace :podman do
        '-e', "PRICE_HISTORY_DB_PATH=#{db_path}",
        '-e', "PORTFOLIO_DB_PATH=#{portfolio_db_path}",
        '-v', "#{DATA_DIR}:#{container_data_dir}:Z,U",
-       IMAGE
+       run_image
   end
 end
 

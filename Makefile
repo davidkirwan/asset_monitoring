@@ -8,7 +8,13 @@ SHELL := /bin/bash
 APP_HOST ?= 0.0.0.0
 APP_PORT ?= 8080
 CONTAINERFILE ?= Containerfile
-IMAGE ?= asset-monitoring:latest
+IMAGE ?= quay.io/dkirwan/asset-monitoring:latest
+BUILD_IMAGE ?= quay.io/dkirwan/asset-monitoring:dev
+ifneq ($(filter true 1 yes,$(USE_DEV_IMAGE)),)
+RUN_IMAGE := $(BUILD_IMAGE)
+else
+RUN_IMAGE := $(IMAGE)
+endif
 DATA_DIR ?= $(CURDIR)/data
 CONTAINER_DATA_DIR ?= /data
 PRICE_HISTORY_DB_PATH ?= $(CONTAINER_DATA_DIR)/asset_history.db
@@ -66,8 +72,8 @@ brakeman: ## Run Brakeman
 
 security: audit brakeman ## Run security checks (bundle-audit + brakeman)
 
-podman-build: ## Build the container image tagged asset-monitoring:latest
-	podman build -t $(IMAGE) -f $(CONTAINERFILE) .
+podman-build: ## Build the container image as quay.io/dkirwan/asset-monitoring:dev
+	podman build -t $(BUILD_IMAGE) -f $(CONTAINERFILE) .
 
 podman-run: ## Run the container (SQLite in ./data bind-mounted to /data)
 	@mkdir -p $(DATA_DIR)
@@ -76,7 +82,7 @@ podman-run: ## Run the container (SQLite in ./data bind-mounted to /data)
 	  -e PRICE_HISTORY_DB_PATH=$(PRICE_HISTORY_DB_PATH) \
 	  -e PORTFOLIO_DB_PATH=$(PORTFOLIO_DB_PATH) \
 	  -v $(DATA_DIR):$(CONTAINER_DATA_DIR):Z,U \
-	  $(IMAGE)
+	  $(RUN_IMAGE)
 
 podman_build: podman-build ## Alias for podman-build
 
