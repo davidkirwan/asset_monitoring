@@ -104,7 +104,7 @@ sudo podman pull quay.io/dkirwan/asset-monitoring:latest
 
 Copy `deploy/asset-monitoring.container` to `/etc/containers/systemd/asset-monitoring.container`, then adjust:
 
-* `Volume=` — e.g. `/var/lib/asset-monitoring/data:/data:Z` (replace the default `%h/.local/share/...` path)
+* `Volume=` — e.g. `/var/lib/asset-monitoring/data:/data:Z,U` (replace the default `%h/.local/share/...` path; keep `:U` so the container user can write SQLite files)
 * `[Install]` — set `WantedBy=multi-user.target`
 
 Reload and start:
@@ -150,6 +150,34 @@ systemctl --user restart asset-monitoring.service
 The unit sets `io.containers.autoupdate=registry` so link:https://docs.podman.io/en/latest/markdown/podman-auto-update.1.html[`podman auto-update`] can refresh the image on a schedule if you enable that separately.
 
 To run a local `:dev` image instead, change `Image=` in the `.container` file to `quay.io/dkirwan/asset-monitoring:dev` (or your own tag), run `daemon-reload`, then restart the service.
+
+=== SQLite data directory permissions
+
+The container runs as UID `1001` (`appuser`). The Quadlet unit mounts the data directory with `:Z,U` so Podman relabels it for SELinux and chowns it for the container user — the same `:Z,U` flags used by `make podman-run`.
+
+If the service still cannot create `asset_history.db` or `portfolio.db`, update the unit file, reload, and restart:
+
+[source,bash]
+----
+cp deploy/asset-monitoring.container ~/.config/containers/systemd/
+systemctl --user daemon-reload
+systemctl --user restart asset-monitoring.service
+----
+
+If the directory was created before `:U` was set, fix ownership once on the host:
+
+[source,bash]
+----
+chown -R 1001:1001 ~/.local/share/asset-monitoring/data
+systemctl --user restart asset-monitoring.service
+----
+
+Check logs for SQLite errors:
+
+[source,bash]
+----
+journalctl --user -u asset-monitoring.service -n 50 --no-pager
+----
 
 == API
 

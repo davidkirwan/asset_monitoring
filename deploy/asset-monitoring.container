@@ -8,7 +8,7 @@ Wants=network-online.target
 Image=quay.io/dkirwan/asset_monitoring:latest
 ContainerName=asset-monitoring
 PublishPort=8080:8080
-Volume=%h/.local/share/asset-monitoring/data:/data:Z
+Volume=%h/.local/share/asset-monitoring/data:/data:Z,U
 Environment=PRICE_HISTORY_RETENTION_DAYS=365
 Environment=PRICE_HISTORY_DB_PATH=/data/asset_history.db
 Environment=PORTFOLIO_DB_PATH=/data/portfolio.db
