@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 ruby '~> 3.4.0'
 
 # Application gems
-gem 'faraday', '2.14.2'
+gem 'faraday', '2.14.3'
 gem 'faraday-retry', '~> 2.2'
 gem 'json', '2.15.2.1'
 gem 'nokogiri', '1.19.3'
