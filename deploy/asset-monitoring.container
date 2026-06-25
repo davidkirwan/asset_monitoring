@@ -5,7 +5,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Container]
-Image=quay.io/dkirwan/asset-monitoring:latest
+Image=quay.io/dkirwan/asset_monitoring:latest
 ContainerName=asset-monitoring
 PublishPort=8080:8080
 Volume=%h/.local/share/asset-monitoring/data:/data:Z

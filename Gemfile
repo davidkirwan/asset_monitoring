@@ -30,6 +30,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'rake', '~> 13.0', require: false
   # rubygems 0.14.0 still calls `Bundler.with_clean_env` (removed in Bundler 4). Git master has the fix; no new release.
   gem 'rerun', git: 'https://github.com/alexch/rerun.git', ref: '4fbf9b25df4d03a5c9d2b8376ef89897e4a11b2b'
 end
